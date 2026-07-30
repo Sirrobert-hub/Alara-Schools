@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALara SMIS - School Management Information System</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        :root {
+            --primary: #1a4d80;
+            --primary-light: #2563eb;
+            --primary-dark: #0f2b4a;
+            --accent: #f59e0b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-fadeInUp {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        .animate-slideIn {
+            animation: slideIn 0.4s ease-out forwards;
+        }
+        .animate-scaleIn {
+            animation: scaleIn 0.3s ease-out forwards;
+        }
+
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+        .delay-400 {
+            animation-delay: 0.4s;
+        }
+        .delay-500 {
+            animation-delay: 0.5s;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Custom button */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            border: 2px solid var(--primary);
+            transition: var(--transition);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: white;
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            transition: var(--transition);
+            border: 1px solid var(--gray-100);
+        }
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Stats card */
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .stat-card .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            background: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.875rem;
+        }
+        tr:hover td {
+            background: var(--gray-50);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-ee {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .badge-me {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .badge-ae {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-be {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--gray-100);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+        }
+        .tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .tab:hover:not(.active) {
+            color: var(--gray-900);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: white;
+            color: var(--gray-900);
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .form-group input::placeholder {
+            color: var(--gray-400);
+        }
+
+        /* Modal overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeInUp 0.2s ease-out;
+        }
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            animation: scaleIn 0.3s ease-out;
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Excel-like marks entry */
+        .marks-grid {
+            display: grid;
+            gap: 1px;
+            background: var(--gray-200);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        .marks-grid .header {
+            background: var(--gray-50);
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            text-align: center;
+        }
+        .marks-grid .cell {
+            background: white;
+            padding: 4px 8px;
+            text-align: center;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+        .marks-grid .cell input {
+            width: 100%;
+            border: none;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 0.875rem;
+            background: transparent;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        .marks-grid .cell input:focus {
+            outline: none;
+            background: rgba(37, 99, 235, 0.05);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+        .marks-grid .cell input.missing {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Navigation sidebar */
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+        .sidebar .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--gray-100);
+            margin-bottom: 16px;
+        }
+        .sidebar .logo h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .sidebar .logo span {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        .sidebar .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+        .sidebar .nav-item.active {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        .sidebar .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar .nav-item .badge {
+            margin-left: auto;
+        }
+
+        /* Layout */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .app-content {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+            }
+            .app-content {
+                padding: 20px;
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .app-content {
+                padding: 16px;
+            }
+            .mobile-nav {
+                display: flex !important;
+            }
+            .stat-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        .mobile-nav {
+            display: none;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mobile-nav .menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-700);
+            cursor: pointer;
+        }
+
+        /* Charts placeholder */
+        .chart-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--gray-100);
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: var(--gray-400);
+        }
+        .chart-container .chart-placeholder {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Landing page hero */
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+        }
+
+        /* Print styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+            body {
+                background: white !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- APP ROOT -->
+    <!-- ============================================================ -->
+    <div id="app">
+
+        <!-- ========================================================== -->
+        <!-- LANDING PAGE (public) -->
+        <!-- ========================================================== -->
+        <div id="landingPage">
+
+            <!-- Navbar -->
+            <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <div class="flex items-center gap-2">
+                            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white font-bold text-sm">
+                                A
+                            </div>
+                            <span class="font-bold text-lg text-gray-900">ALara<span class="text-blue-600">SMIS</span></span>
+                        </div>
+                        <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+                            <a href="#features" class="hover:text-blue-600 transition">Features</a>
+                            <a href="#screenshots" class="hover:text-blue-600 transition">Screenshots</a>
+                            <a href="#contact" class="hover:text-blue-600 transition">Contact</a>
+                            <button onclick="showLogin()" class="btn-primary text-sm py-2 px-5">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </div>
+                        <button class="md:hidden text-gray-600 text-xl" onclick="toggleMobileMenu()">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Mobile menu -->
+                <div id="mobileMenu" class="md:hidden hidden bg-white/95 backdrop-blur border-t border-gray-100 py-4 px-4">
+                    <div class="flex flex-col gap-3">
+                        <a href="#features" class="text-gray-600 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50">Features</a>
+                        <a href="#screenshots" class="text-gray-600 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50">Screenshots</a>
+                        <a href="#contact" class="text-gray-600 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50">Contact</a>
+                        <button onclick="showLogin()" class="btn-primary text-sm py-2 px-5 w-full justify-center">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Hero -->
+            <section class="hero-gradient pt-28 pb-20 px-4 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div class="absolute bottom-0 left-0 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+                <div class="max-w-7xl mx-auto relative z-10">
+                    <div class="grid md:grid-cols-2 gap-12 items-center">
+                        <div class="text-white animate-fadeInUp">
+                            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+                                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                CBC Competency-Based Curriculum
+                            </div>
+                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+                                ALara Primary & <br />Junior Secondary School
+                            </h1>
+                            <p class="text-xl md:text-2xl text-blue-100 mt-3 font-light">
+                                Academic Excellence Through Digital Intelligence
+                            </p>
+                            <p class="text-blue-200/80 mt-4 max-w-lg text-sm md:text-base leading-relaxed">
+                                Empowering educators with a modern School Management Information System for seamless results entry, analytics, and reporting.
+                            </p>
+                            <div class="flex flex-wrap gap-4 mt-8">
+                                <button onclick="showLogin()" class="bg-white text-blue-700 px-8 py-3 rounded-xl font-semibold hover:shadow-xl transition flex items-center gap-2">
+                                    <i class="fas fa-rocket"></i> Get Started
+                                </button>
+                                <a href="#features" class="border border-white/30 text-white px-8 py-3 rounded-xl font-medium hover:bg-white/10 transition flex items-center gap-2">
+                                    <i class="fas fa-chevron-right"></i> Explore
+                                </a>
+                            </div>
+                            <div class="flex items-center gap-6 mt-8 text-blue-100/70 text-sm">
+                                <span><i class="fas fa-check-circle text-green-400 mr-1"></i> KICD Compliant</span>
+                                <span><i class="fas fa-check-circle text-green-400 mr-1"></i> KNEC Ready</span>
+                                <span><i class="fas fa-check-circle text-green-400 mr-1"></i> CBC Aligned</span>
+                            </div>
+                        </div>
+                        <div class="relative animate-fadeInUp delay-200 hidden md:block">
+                            <div class="relative">
+                                <div class="absolute -top-6 -right-6 w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl"></div>
+                                <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-2xl">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white text-xl">
+                                            <i class="fas fa-graduation-cap"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-white font-semibold">ALara School</div>
+                                            <div class="text-blue-200 text-sm">Suna East, Migori County</div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="bg-white/10 rounded-xl p-4 text-center">
+                                            <div class="text-2xl font-bold text-white">98%</div>
+                                            <div class="text-blue-200 text-xs">Pass Rate</div>
+                                        </div>
+                                        <div class="bg-white/10 rounded-xl p-4 text-center">
+                                            <div class="text-2xl font-bold text-white">4.2</div>
+                                            <div class="text-blue-200 text-xs">Mean Score</div>
+                                        </div>
+                                        <div class="bg-white/10 rounded-xl p-4 text-center">
+                                            <div class="text-2xl font-bold text-white">12</div>
+                                            <div class="text-blue-200 text-xs">Subjects</div>
+                                        </div>
+                                        <div class="bg-white/10 rounded-xl p-4 text-center">
+                                            <div class="text-2xl font-bold text-white">680</div>
+                                            <div class="text-blue-200 text-xs">Students</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About -->
+            <section class="py-20 px-4 bg-white">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-14 animate-fadeInUp">
+                        <span class="text-blue-600 font-semibold text-sm tracking-wider">ABOUT US</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Empowering Education Through <span class="text-blue-600">Technology</span></h2>
+                        <p class="text-gray-500 max-w-2xl mx-auto mt-3">ALara Primary & Junior Secondary School is committed to academic excellence through digital transformation.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="card text-center p-8 animate-fadeInUp delay-100">
+                            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-2xl mb-4">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">Mission</h3>
+                            <p class="text-gray-500 text-sm mt-2">To provide quality, holistic education that nurtures every learner's potential through innovative teaching and technology integration.</p>
+                        </div>
+                        <div class="card text-center p-8 animate-fadeInUp delay-200">
+                            <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-2xl mb-4">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">Vision</h3>
+                            <p class="text-gray-500 text-sm mt-2">To be a center of excellence in primary and junior secondary education, producing competent, globally competitive learners.</p>
+                        </div>
+                        <div class="card text-center p-8 animate-fadeInUp delay-300">
+                            <div class="w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center mx-auto text-2xl mb-4">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h3 class="font-bold text-lg">Core Values</h3>
+                            <p class="text-gray-500 text-sm mt-2">Integrity, Excellence, Innovation, Inclusivity, and Collaboration — shaping future leaders.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section id="features" class="py-20 px-4 bg-gray-50">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-14 animate-fadeInUp">
+                        <span class="text-blue-600 font-semibold text-sm tracking-wider">FEATURES</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Everything You Need to <span class="text-blue-600">Manage School</span></h2>
+                        <p class="text-gray-500 max-w-2xl mx-auto mt-3">A comprehensive suite of tools designed for modern education management.</p>
+                    </div>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-100">
+                            <div class="w-14 h-14 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h4 class="font-semibold">Student Results</h4>
+                            <p class="text-gray-400 text-sm">Enter, track, and analyze student performance across all subjects and exams.</p>
+                        </div>
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-200">
+                            <div class="w-14 h-14 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4 class="font-semibold">Performance Analytics</h4>
+                            <p class="text-gray-400 text-sm">Deep insights with charts, heat maps, and predictive analytics for informed decisions.</p>
+                        </div>
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-300">
+                            <div class="w-14 h-14 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-print"></i>
+                            </div>
+                            <h4 class="font-semibold">Report Cards</h4>
+                            <p class="text-gray-400 text-sm">Automated report cards with QR codes, PDF export, and print-ready formats.</p>
+                        </div>
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-400">
+                            <div class="w-14 h-14 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <h4 class="font-semibold">Role-Based Access</h4>
+                            <p class="text-gray-400 text-sm">Secure, role-specific dashboards for administrators, teachers, and parents.</p>
+                        </div>
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-100">
+                            <div class="w-14 h-14 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h4 class="font-semibold">Teacher Portal</h4>
+                            <p class="text-gray-400 text-sm">Dedicated teacher workspace for marks entry, comments, and performance tracking.</p>
+                        </div>
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-200">
+                            <div class="w-14 h-14 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h4 class="font-semibold">Parent Portal</h4>
+                            <p class="text-gray-400 text-sm">Parents can view report cards, attendance, and school announcements (coming soon).</p>
+                        </div>
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-300">
+                            <div class="w-14 h-14 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h4 class="font-semibold">Secure Login</h4>
+                            <p class="text-gray-400 text-sm">Encrypted passwords, audit logs, session timeout, and role-based permissions.</p>
+                        </div>
+                        <div class="card p-6 text-center hover:shadow-lg transition animate-fadeInUp delay-400">
+                            <div class="w-14 h-14 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center mx-auto text-2xl mb-3">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h4 class="font-semibold">Data Backup</h4>
+                            <p class="text-gray-400 text-sm">Automatic backups and audit trails to ensure data integrity and security.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Screenshots -->
+            <section id="screenshots" class="py-20 px-4 bg-white">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-14 animate-fadeInUp">
+                        <span class="text-blue-600 font-semibold text-sm tracking-wider">PREVIEW</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">System <span class="text-blue-600">Screenshots</span></h2>
+                        <p class="text-gray-500 max-w-2xl mx-auto mt-3">A glimpse into the modern, intuitive interface of ALara SMIS.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="card overflow-hidden group animate-fadeInUp delay-100">
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 p-6 h-48 flex items-center justify-center text-blue-400 text-5xl">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold">Analytics Dashboard</h4>
+                                <p class="text-gray-400 text-sm">Real-time performance insights with interactive charts.</p>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden group animate-fadeInUp delay-200">
+                            <div class="bg-gradient-to-br from-green-50 to-green-100/50 p-6 h-48 flex items-center justify-center text-green-400 text-5xl">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold">Marks Entry</h4>
+                                <p class="text-gray-400 text-sm">Excel-like interface for fast and accurate score entry.</p>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden group animate-fadeInUp delay-300">
+                            <div class="bg-gradient-to-br from-purple-50 to-purple-100/50 p-6 h-48 flex items-center justify-center text-purple-400 text-5xl">
+                                <i class="fas fa-print"></i>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold">Report Cards</h4>
+                                <p class="text-gray-400 text-sm">Automated, professional report cards with QR verification.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section id="contact" class="py-20 px-4 bg-gray-50">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-14 animate-fadeInUp">
+                        <span class="text-blue-600 font-semibold text-sm tracking-wider">CONTACT</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Get In <span class="text-blue-600">Touch</span></h2>
+                        <p class="text-gray-500 max-w-2xl mx-auto mt-3">Have questions? Reach out to us — we'd love to hear from you.</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <div class="space-y-6 animate-fadeInUp delay-100">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Phone</h4>
+                                    <p class="text-gray-500">+254 700 123 456</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Email</h4>
+                                    <p class="text-gray-500">info@alaraschool.ac.ke</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Location</h4>
+                                    <p class="text-gray-500">Suna East, Migori County, Kenya</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-4 bg-white rounded-xl border border-gray-200">
+                                <div class="h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+                                    <i class="fas fa-map mr-2"></i> Google Map View
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-8 animate-fadeInUp delay-200">
+                            <h4 class="font-bold text-lg mb-4">Send a Message</h4>
+                            <form onsubmit="event.preventDefault(); alert('Message sent successfully!');">
+                                <div class="form-group">
+                                    <label>Your Name</label>
+                                    <input type="text" placeholder="John Doe" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" placeholder="john@example.com" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea rows="4" placeholder="Your message here..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary w-full justify-center">
+                                    <i class="fas fa-paper-plane"></i> Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="bg-gray-900 text-gray-400 py-12 px-4">
+                <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">A</div>
+                            <span class="font-bold text-lg text-white">ALara<span class="text-blue-400">SMIS</span></span>
+                        </div>
+                        <p class="text-sm">Empowering education through digital intelligence.</p>
+                        <div class="flex gap-4 mt-4">
+                            <a href="#" class="hover:text-white transition"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="hover:text-white transition"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="text-white font-semibold mb-3">Quick Links</h5>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                            <li><a href="#" class="hover:text-white transition">Features</a></li>
+                            <li><a href="#" class="hover:text-white transition">Contact</a></li>
+                            <li><a href="#" class="hover:text-white transition">Login</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="text-white font-semibold mb-3">Legal</h5>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                            <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                            <li><a href="#" class="hover:text-white transition">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="text-white font-semibold mb-3">School</h5>
+                        <ul class="space-y-2 text-sm">
+                            <li>ALara Primary & Junior Secondary</li>
+                            <li>Suna East, Migori County</li>
+                            <li>Kenya</li>
+                            <li class="text-blue-400">+254 700 123 456</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="max-w-7xl mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+                    &copy; 2026 ALara School Management Information System. All rights reserved.
+                </div>
+            </footer>
+
+        </div><!-- end landingPage -->
+
+        <!-- ========================================================== -->
+        <!-- LOGIN MODAL -->
+        <!-- ========================================================== -->
+        <div id="loginModal" class="fixed inset-0 z-[999] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this) closeLogin()">
+            <div class="bg-white rounded-2xl max-w-md w-full p-8 animate-scaleIn shadow-2xl">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+                        A
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
+                    <p class="text-gray-500 text-sm">Sign in to your ALara SMIS account</p>
+                </div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Username or Email</label>
+                        <input type="text" id="loginUsername" placeholder="Enter your username" value="admin" />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" value="admin123" />
+                    </div>
+                    <div class="flex items-center justify-between text-sm mb-4">
+                        <label class="flex items-center gap-2 text-gray-600">
+                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                            Remember Me
+                        </label>
+                        <a href="#" class="text-blue-600 hover:underline">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn-primary w-full justify-center text-base py-3">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                <p class="text-center text-xs text-gray-400 mt-6">
+                    <i class="fas fa-shield-alt mr-1"></i> Secured with 256-bit encryption
+                </p>
+                <button onclick="closeLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- DASHBOARD APP (shown after login) -->
+        <!-- ========================================================== -->
+        <div id="dashboardApp" class="hidden">
+
+            <!-- Mobile Nav -->
+            <div class="mobile-nav">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white font-bold text-xs">A</div>
+                    <span class="font-bold">ALara<span class="text-blue-600">SMIS</span></span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-gray-500" id="mobileUserRole">Admin</span>
+                    <button class="menu-btn" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="app-layout">
+
+                <!-- Sidebar -->
+                <aside class="sidebar" id="sidebar">
+                    <div class="logo">
+                        <h1>ALara<span class="text-blue-600">SMIS</span></h1>
+                        <span>v2.0 · CBC Compliant</span>
+                    </div>
+                    <nav class="space-y-0.5">
+                        <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+                            <i class="fas fa-th-large"></i> Dashboard
+                        </div>
+                        <div class="nav-item" data-page="students" onclick="navigateTo('students')">
+                            <i class="fas fa-user-graduate"></i> Students
+                        </div>
+                        <div class="nav-item" data-page="teachers" onclick="navigateTo('teachers')">
+                            <i class="fas fa-chalkboard-teacher"></i> Teachers
+                        </div>
+                        <div class="nav-item" data-page="examinations" onclick="navigateTo('examinations')">
+                            <i class="fas fa-pencil-alt"></i> Examinations
+                        </div>
+                        <div class="nav-item" data-page="marks" onclick="navigateTo('marks')">
+                            <i class="fas fa-table"></i> Marks Entry
+                            <span class="badge badge-warning text-xs ml-auto">7 pending</span>
+                        </div>
+                        <div class="nav-item" data-page="reports" onclick="navigateTo('reports')">
+                            <i class="fas fa-print"></i> Reports
+                        </div>
+                        <div class="nav-item" data-page="transcripts" onclick="navigateTo('transcripts')">
+                            <i class="fas fa-file-pdf"></i> Transcripts
+                        </div>
+                        <div class="nav-item" data-page="analytics" onclick="navigateTo('analytics')">
+                            <i class="fas fa-chart-pie"></i> Analytics
+                        </div>
+                        <div class="nav-item" data-page="users" onclick="navigateTo('users')">
+                            <i class="fas fa-users-cog"></i> Users
+                        </div>
+                        <div class="nav-item" data-page="settings" onclick="navigateTo('settings')">
+                            <i class="fas fa-cog"></i> Settings
+                        </div>
+                        <div class="nav-item" style="border-left-color:transparent; color:#ef4444;" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </div>
+                    </nav>
+                    <div class="px-4 pt-4 mt-4 border-t border-gray-100 text-xs text-gray-400">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                JD
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-700" id="sidebarUserName">John Doe</div>
+                                <div class="text-gray-400 text-xs" id="sidebarUserRole">System Administrator</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="app-content" id="appContent">
+
+                    <!-- ===================== DASHBOARD ===================== -->
+                    <div id="page-dashboard" class="page-content">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
+                                <p class="text-gray-500 text-sm">Welcome back, John! Here's what's happening at ALara School.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i> Term 2, 2026</span>
+                                <button class="btn-primary text-sm py-2 px-4" onclick="navigateTo('marks')">
+                                    <i class="fas fa-plus"></i> Enter Marks
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                            <div class="stat-card animate-fadeInUp delay-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Total Students</p>
+                                        <p class="text-2xl font-bold text-gray-900">680</p>
+                                        <p class="text-green-600 text-xs"><i class="fas fa-arrow-up"></i> +12 this term</p>
+                                    </div>
+                                    <div class="icon bg-blue-50 text-blue-600"><i class="fas fa-user-graduate"></i></div>
+                                </div>
+                            </div>
+                            <div class="stat-card animate-fadeInUp delay-200" style="border-left-color:#22c55e;">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Teachers</p>
+                                        <p class="text-2xl font-bold text-gray-900">42</p>
+                                        <p class="text-gray-400 text-xs">18 subject teachers</p>
+                                    </div>
+                                    <div class="icon bg-green-50 text-green-600"><i class="fas fa-chalkboard-teacher"></i></div>
+                                </div>
+                            </div>
+                            <div class="stat-card animate-fadeInUp delay-300" style="border-left-color:#f59e0b;">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Mean Score</p>
+                                        <p class="text-2xl font-bold text-gray-900">4.2</p>
+                                        <p class="text-green-600 text-xs"><i class="fas fa-arrow-up"></i> +0.3 from last term</p>
+                                    </div>
+                                    <div class="icon bg-amber-50 text-amber-600"><i class="fas fa-chart-line"></i></div>
+                                </div>
+                            </div>
+                            <div class="stat-card animate-fadeInUp delay-400" style="border-left-color:#8b5cf6;">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Exams This Term</p>
+                                        <p class="text-2xl font-bold text-gray-900">6</p>
+                                        <p class="text-gray-400 text-xs">2 CATs, 2 Midterms, 2 End</p>
+                                    </div>
+                                    <div class="icon bg-purple-50 text-purple-600"><i class="fas fa-pencil-alt"></i></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Row -->
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div class="card">
+                                <h4 class="font-semibold mb-3">Class Performance Comparison</h4>
+                                <div class="chart-container h-52">
+                                    <div class="chart-placeholder"><i class="fas fa-chart-bar"></i></div>
+                                    <p class="text-sm">Grade 7A: 4.6 | Grade 7B: 4.1 | Grade 8A: 4.4</p>
+                                    <div class="w-full flex gap-1 mt-3 h-32 items-end">
+                                        <div style="height:80%;" class="flex-1 bg-blue-500 rounded-t-sm"></div>
+                                        <div style="height:60%;" class="flex-1 bg-blue-400 rounded-t-sm"></div>
+                                        <div style="height:70%;" class="flex-1 bg-blue-500 rounded-t-sm"></div>
+                                        <div style="height:45%;" class="flex-1 bg-blue-300 rounded-t-sm"></div>
+                                        <div style="height:90%;" class="flex-1 bg-blue-600 rounded-t-sm"></div>
+                                        <div style="height:55%;" class="flex-1 bg-blue-400 rounded-t-sm"></div>
+                                        <div style="height:75%;" class="flex-1 bg-blue-500 rounded-t-sm"></div>
+                                        <div style="height:40%;" class="flex-1 bg-blue-300 rounded-t-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h4 class="font-semibold mb-3">Subject Performance</h4>
+                                <div class="chart-container h-52">
+                                    <div class="chart-placeholder"><i class="fas fa-chart-pie"></i></div>
+                                    <p class="text-sm">Math: 4.5 | English: 4.2 | Science: 4.6 | Kiswahili: 3.8</p>
+                                    <div class="flex flex-wrap gap-3 mt-3 justify-center">
+                                        <span class="badge badge-ee">Math 4.5</span>
+                                        <span class="badge badge-me">English 4.2</span>
+                                        <span class="badge badge-ee">Science 4.6</span>
+                                        <span class="badge badge-ae">Kiswahili 3.8</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="card">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-semibold">Recent Activity</h4>
+                                <span class="text-xs text-gray-400">Last 7 days</span>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 text-sm">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-check"></i></div>
+                                    <div class="flex-1"><span class="font-medium">Mr. Ochieng</span> submitted marks for Grade 7A Mathematics</div>
+                                    <span class="text-gray-400 text-xs">2h ago</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-sm">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-user-plus"></i></div>
+                                    <div class="flex-1"><span class="font-medium">Admin</span> added 5 new students to Grade 8B</div>
+                                    <span class="text-gray-400 text-xs">5h ago</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-sm">
+                                    <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center"><i class="fas fa-exclamation-triangle"></i></div>
+                                    <div class="flex-1"><span class="font-medium">Alert:</span> 3 teachers have pending marks for Midterm exams</div>
+                                    <span class="text-gray-400 text-xs">1d ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== STUDENTS ===================== -->
+                    <div id="page-students" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Student Management</h2>
+                                <p class="text-gray-500 text-sm">Manage all student profiles and academic records.</p>
+                            </div>
+                            <button class="btn-primary text-sm py-2 px-4" onclick="alert('Add student form would open here')">
+                                <i class="fas fa-plus"></i> Add Student
+                            </button>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <div class="flex-1 min-w-[200px]">
+                                    <input type="text" placeholder="Search students..." class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>All Classes</option>
+                                    <option>Grade 7A</option>
+                                    <option>Grade 7B</option>
+                                    <option>Grade 8A</option>
+                                    <option>Grade 8B</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>All Streams</option>
+                                    <option>Stream A</option>
+                                    <option>Stream B</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Adm No.</th>
+                                        <th>UPI</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Stream</th>
+                                        <th>Gender</th>
+                                        <th>Mean Score</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-medium">A001</td>
+                                        <td>UPI-2024-001</td>
+                                        <td>Amanda Akinyi</td>
+                                        <td>Grade 8</td>
+                                        <td>A</td>
+                                        <td>F</td>
+                                        <td><span class="badge badge-ee">4.8</span></td>
+                                        <td><button class="text-blue-600 hover:underline text-sm" onclick="alert('View student profile')">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium">A002</td>
+                                        <td>UPI-2024-002</td>
+                                        <td>Brian Odhiambo</td>
+                                        <td>Grade 8</td>
+                                        <td>A</td>
+                                        <td>M</td>
+                                        <td><span class="badge badge-me">4.2</span></td>
+                                        <td><button class="text-blue-600 hover:underline text-sm" onclick="alert('View student profile')">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium">A003</td>
+                                        <td>UPI-2024-003</td>
+                                        <td>Caroline Wanjiru</td>
+                                        <td>Grade 7</td>
+                                        <td>B</td>
+                                        <td>F</td>
+                                        <td><span class="badge badge-ae">3.5</span></td>
+                                        <td><button class="text-blue-600 hover:underline text-sm" onclick="alert('View student profile')">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium">A004</td>
+                                        <td>UPI-2024-004</td>
+                                        <td>David Omondi</td>
+                                        <td>Grade 7</td>
+                                        <td>A</td>
+                                        <td>M</td>
+                                        <td><span class="badge badge-ee">4.9</span></td>
+                                        <td><button class="text-blue-600 hover:underline text-sm" onclick="alert('View student profile')">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium">A005</td>
+                                        <td>UPI-2024-005</td>
+                                        <td>Emily Moraa</td>
+                                        <td>Grade 8</td>
+                                        <td>B</td>
+                                        <td>F</td>
+                                        <td><span class="badge badge-me">4.0</span></td>
+                                        <td><button class="text-blue-600 hover:underline text-sm" onclick="alert('View student profile')">View</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-between items-center mt-4 text-sm text-gray-500">
+                            <span>Showing 5 of 680 students</span>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50">Prev</button>
+                                <button class="px-3 py-1 bg-blue-600 text-white rounded-lg">1</button>
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50">Next</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== TEACHERS ===================== -->
+                    <div id="page-teachers" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Teacher Management</h2>
+                                <p class="text-gray-500 text-sm">Manage teacher profiles and class assignments.</p>
+                            </div>
+                            <button class="btn-primary text-sm py-2 px-4" onclick="alert('Add teacher form')">
+                                <i class="fas fa-plus"></i> Add Teacher
+                            </button>
+                        </div>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="card flex items-center gap-4 p-4">
+                                <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">JO</div>
+                                <div>
+                                    <div class="font-semibold">Mr. John Ochieng</div>
+                                    <div class="text-sm text-gray-500">Mathematics · TSC: 123456</div>
+                                    <div class="text-xs text-gray-400">Grade 7A, 8A</div>
+                                </div>
+                            </div>
+                            <div class="card flex items-center gap-4 p-4">
+                                <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-lg">SM</div>
+                                <div>
+                                    <div class="font-semibold">Ms. Sarah Mwangi</div>
+                                    <div class="text-sm text-gray-500">English · TSC: 234567</div>
+                                    <div class="text-xs text-gray-400">Grade 7A, 7B</div>
+                                </div>
+                            </div>
+                            <div class="card flex items-center gap-4 p-4">
+                                <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg">PK</div>
+                                <div>
+                                    <div class="font-semibold">Dr. Peter Kiprop</div>
+                                    <div class="text-sm text-gray-500">Science · TSC: 345678</div>
+                                    <div class="text-xs text-gray-400">Grade 8A, 8B</div>
+                                </div>
+                            </div>
+                            <div class="card flex items-center gap-4 p-4">
+                                <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-lg">AO</div>
+                                <div>
+                                    <div class="font-semibold">Mrs. Alice Ouma</div>
+                                    <div class="text-sm text-gray-500">Kiswahili · TSC: 456789</div>
+                                    <div class="text-xs text-gray-400">Grade 7A, 8B</div>
+                                </div>
+                            </div>
+                            <div class="card flex items-center gap-4 p-4">
+                                <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-lg">JO</div>
+                                <div>
+                                    <div class="font-semibold">Mr. James Odhiambo</div>
+                                    <div class="text-sm text-gray-500">Social Studies · TSC: 567890</div>
+                                    <div class="text-xs text-gray-400">Grade 7B, 8A</div>
+                                </div>
+                            </div>
+                            <div class="card flex items-center gap-4 p-4">
+                                <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-lg">RN</div>
+                                <div>
+                                    <div class="font-semibold">Ms. Rose Nyarangi</div>
+                                    <div class="text-sm text-gray-500">CRE · TSC: 678901</div>
+                                    <div class="text-xs text-gray-400">Grade 7A, 8B</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== EXAMINATIONS ===================== -->
+                    <div id="page-examinations" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Examination Management</h2>
+                                <p class="text-gray-500 text-sm">Set up and manage all examinations.</p>
+                            </div>
+                            <button class="btn-primary text-sm py-2 px-4" onclick="alert('New exam setup form')">
+                                <i class="fas fa-plus"></i> New Exam
+                            </button>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4 mb-6">
+                            <div class="card">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold">End of Term 2 Exams</h4>
+                                        <p class="text-sm text-gray-500">Grade 7 & 8 · Due: 30 Nov 2026</p>
+                                    </div>
+                                    <span class="badge badge-warning">In Progress</span>
+                                </div>
+                                <div class="mt-3 text-sm">
+                                    <span class="text-gray-500">Progress:</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width:65%"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-400">12/18 subjects submitted</span>
+                                </div>
+                                <div class="flex gap-2 mt-3">
+                                    <button class="text-xs px-3 py-1 bg-blue-50 text-blue-600 rounded-lg" onclick="navigateTo('marks')">Enter Marks</button>
+                                    <button class="text-xs px-3 py-1 bg-gray-50 text-gray-600 rounded-lg">View Details</button>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold">Midterm 2 Exams</h4>
+                                        <p class="text-sm text-gray-500">Grade 7 & 8 · Completed: 15 Oct 2026</p>
+                                    </div>
+                                    <span class="badge badge-success">Completed</span>
+                                </div>
+                                <div class="mt-3 text-sm">
+                                    <span class="text-gray-500">Mean Score: 4.1</span>
+                                    <span class="text-gray-400 ml-3">Pass Rate: 82%</span>
+                                </div>
+                                <div class="flex gap-2 mt-3">
+                                    <button class="text-xs px-3 py-1 bg-blue-50 text-blue-600 rounded-lg" onclick="navigateTo('reports')">View Reports</button>
+                                    <button class="text-xs px-3 py-1 bg-gray-50 text-gray-600 rounded-lg">Analytics</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 class="font-semibold mb-3">All Examinations</h4>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr><th>Exam Name</th><th>Term</th><th>Year</th><th>Status</th><th>Action</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>End of Term 2</td><td>Term 2</td><td>2026</td><td><span class="badge badge-warning">In Progress</span></td><td><button class="text-blue-600 text-sm">Manage</button></td></tr>
+                                        <tr><td>Midterm 2</td><td>Term 2</td><td>2026</td><td><span class="badge badge-success">Completed</span></td><td><button class="text-blue-600 text-sm">View</button></td></tr>
+                                        <tr><td>CAT 2</td><td>Term 2</td><td>2026</td><td><span class="badge badge-success">Completed</span></td><td><button class="text-blue-600 text-sm">View</button></td></tr>
+                                        <tr><td>End of Term 1</td><td>Term 1</td><td>2026</td><td><span class="badge badge-success">Completed</span></td><td><button class="text-blue-600 text-sm">View</button></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== MARKS ENTRY ===================== -->
+                    <div id="page-marks" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Marks Entry</h2>
+                                <p class="text-gray-500 text-sm">Excel-like interface for fast and accurate score entry.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn-outline text-sm py-2 px-4" onclick="alert('Auto-save enabled')"><i class="fas fa-save"></i> Auto-Save</button>
+                                <button class="btn-primary text-sm py-2 px-4" onclick="alert('Marks submitted!')"><i class="fas fa-check"></i> Submit</button>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="card mb-4">
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>2026</option>
+                                    <option>2025</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Term 2</option>
+                                    <option>Term 1</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Grade 8</option>
+                                    <option>Grade 7</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Stream A</option>
+                                    <option>Stream B</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Mathematics</option>
+                                    <option>English</option>
+                                    <option>Science</option>
+                                    <option>Kiswahili</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>End of Term 2</option>
+                                    <option>Midterm 2</option>
+                                    <option>CAT 2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Excel-like Grid -->
+                        <div class="card overflow-hidden p-0">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th class="p-3 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
+                                            <th class="p-3 text-left text-xs font-semibold text-gray-500 uppercase">Adm No.</th>
+                                            <th class="p-3 text-left text-xs font-semibold text-gray-500 uppercase">Student Name</th>
+                                            <th class="p-3 text-left text-xs font-semibold text-gray-500 uppercase">Score (100)</th>
+                                            <th class="p-3 text-left text-xs font-semibold text-gray-500 uppercase">Grade</th>
+                                            <th class="p-3 text-left text-xs font-semibold text-gray-500 uppercase">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="p-3 text-sm text-gray-500">1</td>
+                                            <td class="p-3 text-sm font-medium">A001</td>
+                                            <td class="p-3 text-sm">Amanda Akinyi</td>
+                                            <td class="p-3"><input type="number" value="92" class="w-20 px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                                            <td class="p-3"><span class="badge badge-ee">EE1</span></td>
+                                            <td class="p-3 text-sm text-gray-500">Excellent</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-sm text-gray-500">2</td>
+                                            <td class="p-3 text-sm font-medium">A002</td>
+                                            <td class="p-3 text-sm">Brian Odhiambo</td>
+                                            <td class="p-3"><input type="number" value="78" class="w-20 px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                                            <td class="p-3"><span class="badge badge-me">ME1</span></td>
+                                            <td class="p-3 text-sm text-gray-500">Very Good</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-sm text-gray-500">3</td>
+                                            <td class="p-3 text-sm font-medium">A003</td>
+                                            <td class="p-3 text-sm">Caroline Wanjiru</td>
+                                            <td class="p-3"><input type="number" value="55" class="w-20 px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                                            <td class="p-3"><span class="badge badge-ae">AE1</span></td>
+                                            <td class="p-3 text-sm text-gray-500">Needs Improvement</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-sm text-gray-500">4</td>
+                                            <td class="p-3 text-sm font-medium">A004</td>
+                                            <td class="p-3 text-sm">David Omondi</td>
+                                            <td class="p-3"><input type="number" value="95" class="w-20 px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                                            <td class="p-3"><span class="badge badge-ee">EE1</span></td>
+                                            <td class="p-3 text-sm text-gray-500">Exceptional</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-sm text-gray-500">5</td>
+                                            <td class="p-3 text-sm font-medium">A005</td>
+                                            <td class="p-3 text-sm">Emily Moraa</td>
+                                            <td class="p-3"><input type="number" value="38" class="w-20 px-2 py-1 border border-red-200 rounded text-sm focus:ring-2 focus:ring-red-500 focus:outline-none bg-red-50" /></td>
+                                            <td class="p-3"><span class="badge badge-be">BE1</span></td>
+                                            <td class="p-3 text-sm text-red-500">⚠️ Below Expectations</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 text-sm text-gray-500">6</td>
+                                            <td class="p-3 text-sm font-medium">A006</td>
+                                            <td class="p-3 text-sm">Felix Kiprop</td>
+                                            <td class="p-3"><input type="number" value="" placeholder="—" class="w-20 px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                                            <td class="p-3"><span class="badge badge-warning">—</span></td>
+                                            <td class="p-3 text-sm text-gray-400">No marks entered</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="p-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-500 flex justify-between">
+                                <span><i class="fas fa-keyboard mr-1"></i> Tab to navigate · Ctrl+S to save</span>
+                                <span><i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i> 1 student missing marks</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== REPORTS ===================== -->
+                    <div id="page-reports" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Report Cards</h2>
+                                <p class="text-gray-500 text-sm">Generate and manage student report cards.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn-outline text-sm py-2 px-4"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                                <button class="btn-primary text-sm py-2 px-4"><i class="fas fa-print"></i> Print</button>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                                    <option>Grade 8A</option>
+                                    <option>Grade 8B</option>
+                                    <option>Grade 7A</option>
+                                    <option>Grade 7B</option>
+                                </select>
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                                    <option>Term 2 · 2026</option>
+                                    <option>Term 1 · 2026</option>
+                                </select>
+                                <button class="btn-primary text-sm py-2 px-4"><i class="fas fa-search"></i> Generate</button>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="card border-2 border-blue-100">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 text-2xl">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold">Amanda Akinyi · Grade 8A</h4>
+                                        <p class="text-sm text-gray-500">Adm: A001 · UPI: UPI-2024-001</p>
+                                        <div class="flex flex-wrap gap-2 mt-2">
+                                            <span class="badge badge-ee">Overall: EE1</span>
+                                            <span class="badge badge-info">Mean: 4.8</span>
+                                        </div>
+                                        <div class="flex gap-2 mt-3">
+                                            <button class="text-xs px-3 py-1 bg-blue-50 text-blue-600 rounded-lg">View</button>
+                                            <button class="text-xs px-3 py-1 bg-green-50 text-green-600 rounded-lg"><i class="fas fa-download"></i> PDF</button>
+                                        </div>
+                                    </div>
+                                    <div class="text-3xl text-gray-300"><i class="fas fa-qrcode"></i></div>
+                                </div>
+                            </div>
+                            <div class="card border-2 border-green-100">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-16 h-16 rounded-xl bg-green-50 flex items-center justify-center text-green-600 text-2xl">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold">Brian Odhiambo · Grade 8A</h4>
+                                        <p class="text-sm text-gray-500">Adm: A002 · UPI: UPI-2024-002</p>
+                                        <div class="flex flex-wrap gap-2 mt-2">
+                                            <span class="badge badge-me">Overall: ME1</span>
+                                            <span class="badge badge-info">Mean: 4.2</span>
+                                        </div>
+                                        <div class="flex gap-2 mt-3">
+                                            <button class="text-xs px-3 py-1 bg-blue-50 text-blue-600 rounded-lg">View</button>
+                                            <button class="text-xs px-3 py-1 bg-green-50 text-green-600 rounded-lg"><i class="fas fa-download"></i> PDF</button>
+                                        </div>
+                                    </div>
+                                    <div class="text-3xl text-gray-300"><i class="fas fa-qrcode"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== TRANSCRIPTS ===================== -->
+                    <div id="page-transcripts" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Transcripts</h2>
+                                <p class="text-gray-500 text-sm">Generate official transcripts for student transfers.</p>
+                            </div>
+                            <button class="btn-primary text-sm py-2 px-4"><i class="fas fa-file-pdf"></i> Export All</button>
+                        </div>
+                        <div class="card">
+                            <div class="flex flex-wrap gap-3 items-center mb-4">
+                                <input type="text" placeholder="Search student..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-200 rounded-lg text-sm" />
+                                <button class="btn-primary text-sm py-2 px-4"><i class="fas fa-search"></i> Search</button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead><tr><th>Student</th><th>Adm No.</th><th>Class</th><th>Overall Mean</th><th>Action</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>Amanda Akinyi</td><td>A001</td><td>Grade 8A</td><td>4.8</td><td><button class="text-blue-600 text-sm" onclick="alert('Transcript preview')"><i class="fas fa-file-pdf mr-1"></i> Generate</button></td></tr>
+                                        <tr><td>Brian Odhiambo</td><td>A002</td><td>Grade 8A</td><td>4.2</td><td><button class="text-blue-600 text-sm" onclick="alert('Transcript preview')"><i class="fas fa-file-pdf mr-1"></i> Generate</button></td></tr>
+                                        <tr><td>David Omondi</td><td>A004</td><td>Grade 7A</td><td>4.9</td><td><button class="text-blue-600 text-sm" onclick="alert('Transcript preview')"><i class="fas fa-file-pdf mr-1"></i> Generate</button></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== ANALYTICS ===================== -->
+                    <div id="page-analytics" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
+                                <p class="text-gray-500 text-sm">Deep insights into student, class, and school performance.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                                    <option>Term 2 · 2026</option>
+                                    <option>Term 1 · 2026</option>
+                                </select>
+                                <button class="btn-primary text-sm py-2 px-4"><i class="fas fa-download"></i> Export</button>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-4 gap-4 mb-6">
+                            <div class="stat-card" style="border-left-color:#8b5cf6;">
+                                <p class="text-gray-500 text-sm">School Mean</p>
+                                <p class="text-2xl font-bold">4.2</p>
+                                <p class="text-green-600 text-xs"><i class="fas fa-arrow-up"></i> +0.3</p>
+                            </div>
+                            <div class="stat-card" style="border-left-color:#22c55e;">
+                                <p class="text-gray-500 text-sm">Pass Rate</p>
+                                <p class="text-2xl font-bold">82%</p>
+                                <p class="text-green-600 text-xs"><i class="fas fa-arrow-up"></i> +5%</p>
+                            </div>
+                            <div class="stat-card" style="border-left-color:#f59e0b;">
+                                <p class="text-gray-500 text-sm">Best Class</p>
+                                <p class="text-2xl font-bold">Grade 8A</p>
+                                <p class="text-gray-400 text-xs">Mean: 4.6</p>
+                            </div>
+                            <div class="stat-card" style="border-left-color:#ef4444;">
+                                <p class="text-gray-500 text-sm">Weakest Subject</p>
+                                <p class="text-2xl font-bold">Kiswahili</p>
+                                <p class="text-gray-400 text-xs">Mean: 3.8</p>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="card">
+                                <h4 class="font-semibold mb-3">Grade Distribution</h4>
+                                <div class="chart-container h-48">
+                                    <div class="flex items-end justify-center gap-4 w-full h-32">
+                                        <div class="flex flex-col items-center"><div class="w-12 bg-blue-500 rounded-t" style="height:80px"></div><span class="text-xs mt-1">EE</span></div>
+                                        <div class="flex flex-col items-center"><div class="w-12 bg-blue-400 rounded-t" style="height:60px"></div><span class="text-xs mt-1">ME</span></div>
+                                        <div class="flex flex-col items-center"><div class="w-12 bg-amber-400 rounded-t" style="height:35px"></div><span class="text-xs mt-1">AE</span></div>
+                                        <div class="flex flex-col items-center"><div class="w-12 bg-red-400 rounded-t" style="height:15px"></div><span class="text-xs mt-1">BE</span></div>
+                                    </div>
+                                    <p class="text-sm text-gray-400">EE: 45% · ME: 30% · AE: 18% · BE: 7%</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h4 class="font-semibold mb-3">Subject Performance Trend</h4>
+                                <div class="chart-container h-48">
+                                    <div class="w-full h-32 flex items-end gap-2">
+                                        <div class="flex-1 flex flex-col items-center"><div class="w-full bg-blue-500 rounded-t" style="height:60px"></div><span class="text-xs mt-1">Math</span></div>
+                                        <div class="flex-1 flex flex-col items-center"><div class="w-full bg-blue-400 rounded-t" style="height:50px"></div><span class="text-xs mt-1">Eng</span></div>
+                                        <div class="flex-1 flex flex-col items-center"><div class="w-full bg-blue-600 rounded-t" style="height:70px"></div><span class="text-xs mt-1">Sci</span></div>
+                                        <div class="flex-1 flex flex-col items-center"><div class="w-full bg-amber-400 rounded-t" style="height:35px"></div><span class="text-xs mt-1">Kisw</span></div>
+                                        <div class="flex-1 flex flex-col items-center"><div class="w-full bg-blue-300 rounded-t" style="height:45px"></div><span class="text-xs mt-1">SST</span></div>
+                                    </div>
+                                    <p class="text-sm text-gray-400">Science leads with 4.6, Kiswahili needs improvement</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-6">
+                            <h4 class="font-semibold mb-3">Student Performance Heat Map (by subject & class)</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-sm">
+                                    <thead><tr><th class="p-2 bg-gray-50">Class</th><th class="p-2 bg-gray-50">Math</th><th class="p-2 bg-gray-50">Eng</th><th class="p-2 bg-gray-50">Sci</th><th class="p-2 bg-gray-50">Kisw</th><th class="p-2 bg-gray-50">SST</th><th class="p-2 bg-gray-50">Mean</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="p-2 font-medium">8A</td><td class="p-2 bg-green-200">4.6</td><td class="p-2 bg-green-100">4.2</td><td class="p-2 bg-green-200">4.7</td><td class="p-2 bg-yellow-100">3.9</td><td class="p-2 bg-green-100">4.3</td><td class="p-2 font-bold">4.3</td></tr>
+                                        <tr><td class="p-2 font-medium">8B</td><td class="p-2 bg-green-100">4.1</td><td class="p-2 bg-green-100">4.0</td><td class="p-2 bg-green-100">4.2</td><td class="p-2 bg-yellow-100">3.7</td><td class="p-2 bg-green-100">4.0</td><td class="p-2 font-bold">4.0</td></tr>
+                                        <tr><td class="p-2 font-medium">7A</td><td class="p-2 bg-green-200">4.5</td><td class="p-2 bg-green-100">4.1</td><td class="p-2 bg-green-200">4.6</td><td class="p-2 bg-yellow-100">3.8</td><td class="p-2 bg-green-100">4.2</td><td class="p-2 font-bold">4.2</td></tr>
+                                        <tr><td class="p-2 font-medium">7B</td><td class="p-2 bg-green-100">3.9</td><td class="p-2 bg-yellow-100">3.8</td><td class="p-2 bg-green-100">4.1</td><td class="p-2 bg-yellow-200">3.5</td><td class="p-2 bg-green-100">3.9</td><td class="p-2 font-bold">3.8</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
+                                <span><span class="inline-block w-3 h-3 bg-green-200 rounded mr-1"></span> High (4.0+)</span>
+                                <span><span class="inline-block w-3 h-3 bg-yellow-100 rounded mr-1"></span> Medium (3.5-3.9)</span>
+                                <span><span class="inline-block w-3 h-3 bg-red-200 rounded mr-1"></span> Low (&lt;3.5)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== USERS ===================== -->
+                    <div id="page-users" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+                                <p class="text-gray-500 text-sm">Manage system users and their roles.</p>
+                            </div>
+                            <button class="btn-primary text-sm py-2 px-4" onclick="alert('Create user form')"><i class="fas fa-user-plus"></i> Add User</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    <tr><td>John Doe</td><td>admin</td><td><span class="badge badge-info">Administrator</span></td><td><span class="badge badge-success">Active</span></td><td><button class="text-blue-600 text-sm">Edit</button></td></tr>
+                                    <tr><td>Mr. John Ochieng</td><td>jochieng</td><td><span class="badge badge-info">Subject Teacher</span></td><td><span class="badge badge-success">Active</span></td><td><button class="text-blue-600 text-sm">Edit</button></td></tr>
+                                    <tr><td>Ms. Sarah Mwangi</td><td>smwangi</td><td><span class="badge badge-info">Subject Teacher</span></td><td><span class="badge badge-success">Active</span></td><td><button class="text-blue-600 text-sm">Edit</button></td></tr>
+                                    <tr><td>Mrs. Alice Ouma</td><td>aouma</td><td><span class="badge badge-info">Class Teacher</span></td><td><span class="badge badge-warning">Inactive</span></td><td><button class="text-blue-600 text-sm">Edit</button></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ===================== SETTINGS ===================== -->
+                    <div id="page-settings" class="page-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Settings</h2>
+                                <p class="text-gray-500 text-sm">Configure school settings and system preferences.</p>
+                            </div>
+                            <button class="btn-primary text-sm py-2 px-4" onclick="alert('Settings saved!')"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="card">
+                                <h4 class="font-semibold mb-4">School Information</h4>
+                                <div class="form-group">
+                                    <label>School Name</label>
+                                    <input type="text" value="ALara Primary & Junior Secondary School" />
+                                </div>
+                                <div class="form-group">
+                                    <label>County</label>
+                                    <input type="text" value="Migori" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Sub-County</label>
+                                    <input type="text" value="Suna East" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Country</label>
+                                    <input type="text" value="Kenya" />
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h4 class="font-semibold mb-4">Academic Settings</h4>
+                                <div class="form-group">
+                                    <label>Current Academic Year</label>
+                                    <select><option>2026</option><option>2025</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Current Term</label>
+                                    <select><option>Term 1</option><option selected>Term 2</option><option>Term 3</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Grading System</label>
+                                    <select><option>CBC 8-Point Scale</option><option>Traditional A-E</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Automatic Backup</label>
+                                    <select><option>Daily</option><option>Weekly</option><option>Monthly</option></select>
+                                </div>
+                            </div>
+                            <div class="card md:col-span-2">
+                                <h4 class="font-semibold mb-4">Grading Scale (CBC 8-Point)</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-ee">EE1</span> <span class="text-sm ml-2">90-100%</span></div>
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-ee">EE2</span> <span class="text-sm ml-2">75-89%</span></div>
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-me">ME1</span> <span class="text-sm ml-2">58-74%</span></div>
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-me">ME2</span> <span class="text-sm ml-2">41-57%</span></div>
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-ae">AE1</span> <span class="text-sm ml-2">31-40%</span></div>
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-ae">AE2</span> <span class="text-sm ml-2">21-30%</span></div>
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-be">BE1</span> <span class="text-sm ml-2">11-20%</span></div>
+                                    <div class="p-3 bg-gray-50 rounded-lg"><span class="badge badge-be">BE2</span> <span class="text-sm ml-2">1-10%</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
+    <script>
+        // --- State ---
+        let currentPage = 'dashboard';
+        const userRole = 'Admin'; // 'Admin', 'Principal', 'Deputy', 'ClassTeacher', 'SubjectTeacher'
+
+        // --- DOM refs ---
+        const landingPage = document.getElementById('landingPage');
+        const dashboardApp = document.getElementById('dashboardApp');
+        const loginModal = document.getElementById('loginModal');
+        const sidebar = document.getElementById('sidebar');
+
+        // --- Navigation ---
+        function navigateTo(page) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+            // Show target
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.remove('hidden');
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
+            currentPage = page;
+            // Close mobile sidebar
+            if (window.innerWidth < 768) {
+                sidebar.style.display = 'none';
+            }
+        }
+
+        // --- Login ---
+        function showLogin() {
+            loginModal.classList.remove('hidden');
+            loginModal.style.display = 'flex';
+        }
+
+        function closeLogin() {
+            loginModal.style.display = 'none';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (username && password) {
+                // Demo: any login works
+                landingPage.style.display = 'none';
+                dashboardApp.classList.remove('hidden');
+                closeLogin();
+                // Set user name in sidebar
+                document.getElementById('sidebarUserName').textContent = username === 'admin' ? 'John Doe' : username;
+                document.getElementById('sidebarUserRole').textContent = userRole === 'Admin' ? 'System Administrator' :
+                    userRole === 'Principal' ? 'Principal' :
+                    userRole === 'Deputy' ? 'Deputy Headteacher' :
+                    userRole === 'ClassTeacher' ? 'Class Teacher' : 'Subject Teacher';
+                document.getElementById('mobileUserRole').textContent = userRole;
+                navigateTo('dashboard');
+            } else {
+                alert('Please enter username and password');
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                dashboardApp.classList.add('hidden');
+                landingPage.style.display = 'block';
+                document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+                document.getElementById('page-dashboard').classList.remove('hidden');
+                // Reset nav
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                document.querySelector('.nav-item[data-page="dashboard"]')?.classList.add('active');
+                window.scrollTo({ top: 0 });
+            }
+        }
+
+        // --- Mobile ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleSidebar() {
+            if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+                sidebar.style.display = 'block';
+                sidebar.style.position = 'fixed';
+                sidebar.style.top = '0';
+                sidebar.style.left = '0';
+                sidebar.style.zIndex = '200';
+                sidebar.style.height = '100vh';
+                sidebar.style.width = '280px';
+                sidebar.style.boxShadow = '0 0 40px rgba(0,0,0,0.2)';
+                // Add overlay
+                if (!document.getElementById('sidebarOverlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.id = 'sidebarOverlay';
+                    overlay.style.cssText =
+                        'position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:199;backdrop-filter:blur(2px);';
+                    overlay.onclick = () => { sidebar.style.display = 'none';
+                        overlay.remove(); };
+                    document.body.appendChild(overlay);
+                }
+            } else {
+                sidebar.style.display = 'none';
+                document.getElementById('sidebarOverlay')?.remove();
+            }
+        }
+
+        // Close sidebar on resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                sidebar.style.display = '';
+                sidebar.style.position = '';
+                sidebar.style.top = '';
+                sidebar.style.left = '';
+                sidebar.style.zIndex = '';
+                sidebar.style.height = '';
+                sidebar.style.width = '';
+                sidebar.style.boxShadow = '';
+                document.getElementById('sidebarOverlay')?.remove();
+            }
+        });
+
+        // --- Auto-close login modal on Escape ---
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLogin();
+        });
+
+        // --- Check for saved session (demo) ---
+        // Just show landing by default
+
+        console.log('ALara SMIS v2.0 loaded successfully!');
+        console.log('👋 Welcome to ALara School Management Information System');
+        console.log('📚 CBC 8-Point Grading Scale enabled');
+        console.log('🔐 Role-based access control active');
+    </script>
+
+</body>
+</html>
