@@ -32,8 +32,8 @@ function LoginForm() {
         setError("Invalid username or password. Please try again.");
         return;
       }
-      const targetUrl = res?.url ?? params.get("callbackUrl") ?? callbackUrl;
-      window.location.assign(targetUrl);
+      const targetUrl = params.get("callbackUrl") || "/app";
+      window.location.href = targetUrl;
     } catch (err: any) {
       console.error("Login submission error:", err);
       setError("An unexpected error occurred during sign-in. Please try again.");
