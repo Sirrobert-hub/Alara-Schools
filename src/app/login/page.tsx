@@ -30,8 +30,8 @@ function LoginForm() {
       setError("Invalid username or password. Please try again.");
       return;
     }
-    router.push(res?.url ?? params.get("callbackUrl") ?? callbackUrl);
-    router.refresh();
+    const targetUrl = res?.url ?? params.get("callbackUrl") ?? callbackUrl;
+    window.location.assign(targetUrl);
   }
 
 
