@@ -48,25 +48,27 @@ export const authOptions: NextAuthOptions = {
 
         const inputUsername = credentials.username.trim();
 
-        let user = await prisma.user.findFirst({
-          where: {
-            username: {
-              equals: inputUsername,
-              mode: "insensitive",
-            },
-          },
+        // Safe case variation lookups compatible with both SQLite and PostgreSQL
+        let user = await prisma.user.findUnique({
+          where: { username: inputUsername },
         });
-
-        if (!user) {
-          user = await prisma.user.findUnique({
-            where: { username: inputUsername },
-          });
-        }
 
         if (!user) {
           const capitalized = inputUsername.charAt(0).toUpperCase() + inputUsername.slice(1).toLowerCase();
           user = await prisma.user.findUnique({
             where: { username: capitalized },
+          });
+        }
+
+        if (!user) {
+          user = await prisma.user.findUnique({
+            where: { username: inputUsername.toLowerCase() },
+          });
+        }
+
+        if (!user) {
+          user = await prisma.user.findUnique({
+            where: { username: inputUsername.toUpperCase() },
           });
         }
 

@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 import { sendPasswordResetEmail } from "@/lib/email";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
@@ -13,13 +11,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Username is required" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { username },
+    const inputUsername = username.trim();
+
+    // Safe case variation lookups
+    let user = await prisma.user.findUnique({
+      where: { username: inputUsername },
       include: { teacher: true },
     });
 
     if (!user) {
-      // Return 200 even if user doesn't exist to prevent username enumeration
+      const capitalized = inputUsername.charAt(0).toUpperCase() + inputUsername.slice(1).toLowerCase();
+      user = await prisma.user.findUnique({
+        where: { username: capitalized },
+        include: { teacher: true },
+      });
+    }
+
+    if (!user) {
+      user = await prisma.user.findUnique({
+        where: { username: inputUsername.toLowerCase() },
+        include: { teacher: true },
+      });
+    }
+
+    if (!user) {
+      user = await prisma.user.findUnique({
+        where: { username: inputUsername.toUpperCase() },
+        include: { teacher: true },
+      });
+    }
+
+    if (!user) {
+      // Return success response to prevent username enumeration
       return NextResponse.json({ message: "If an account exists, a reset link was sent." });
     }
 
@@ -34,8 +57,6 @@ export async function POST(req: Request) {
       },
     });
 
-    // Try to find an email. If the user is a teacher, they might have one.
-    // If not, we'll use a dummy email just to trigger the console.log mock.
     let email = "mocked-email@alaraschools.ac.ke";
     if (user.teacher && user.teacher.email) {
       email = user.teacher.email;
@@ -44,8 +65,8 @@ export async function POST(req: Request) {
     await sendPasswordResetEmail(email, resetToken);
 
     return NextResponse.json({ message: "If an account exists, a reset link was sent." });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Forgot password error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
   }
 }
