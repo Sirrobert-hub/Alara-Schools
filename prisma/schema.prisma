@@ -62,6 +62,8 @@ model User {
   active              Boolean        @default(true)
   teacherId           String?        @unique
   teacher             Teacher?       @relation(fields: [teacherId], references: [id])
+  resetToken          String?        @unique
+  resetTokenExpiry    DateTime?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
   marksEntered        Mark[]

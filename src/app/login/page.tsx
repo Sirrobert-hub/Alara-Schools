@@ -125,9 +125,9 @@ function LoginForm() {
                 />
                 Remember me
               </label>
-              <span className="cursor-not-allowed text-slate-400" title="Contact admin to reset password">
+              <Link href="/forgot-password" className="text-indigo-600 hover:underline" title="Reset your password">
                 Forgot password?
-              </span>
+              </Link>
             </div>
             <button type="submit" className="btn-primary w-full" disabled={loading}>
               {loading ? "Signing in…" : "Login →"}

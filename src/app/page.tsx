@@ -38,9 +38,9 @@ export default function LandingPage() {
         </div>
         
         <h1 className="font-display max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl">
-          School Management, <br className="hidden sm:block" />
+          Alara Primary <br className="hidden sm:block" />
           <span className="bg-gradient-to-r from-indigo-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Perfected.
+            and JS
           </span>
         </h1>
         
