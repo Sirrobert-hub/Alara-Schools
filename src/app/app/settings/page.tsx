@@ -103,15 +103,15 @@ export default async function SettingsPage() {
           <div className="grid gap-4 lg:grid-cols-3">
             <div>
               <label className="label" htmlFor="mission">Mission</label>
-              <textarea id="mission" name="mission" className="input min-h-[120px]">{settings.mission ?? ""}</textarea>
+              <textarea id="mission" name="mission" className="input min-h-[120px]" defaultValue={settings.mission ?? ""} />
             </div>
             <div>
               <label className="label" htmlFor="vision">Vision</label>
-              <textarea id="vision" name="vision" className="input min-h-[120px]">{settings.vision ?? ""}</textarea>
+              <textarea id="vision" name="vision" className="input min-h-[120px]" defaultValue={settings.vision ?? ""} />
             </div>
             <div>
               <label className="label" htmlFor="coreValues">Core values</label>
-              <textarea id="coreValues" name="coreValues" className="input min-h-[120px]">{settings.coreValues ?? ""}</textarea>
+              <textarea id="coreValues" name="coreValues" className="input min-h-[120px]" defaultValue={settings.coreValues ?? ""} />
             </div>
           </div>
 
