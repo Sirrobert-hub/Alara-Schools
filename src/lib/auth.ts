@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { seedDatabase } from "@/lib/seed-db";
 import { redirect } from "next/navigation";
 
 declare module "next-auth" {
@@ -48,6 +49,16 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.username || !credentials?.password) return null;
 
         const inputUsername = credentials.username.trim();
+
+        // Auto-seed database if empty
+        try {
+          const userCount = await prisma.user.count();
+          if (userCount === 0) {
+            await seedDatabase(prisma);
+          }
+        } catch (seedErr) {
+          console.error("Auto-seed on authorize failed:", seedErr);
+        }
 
         // Safe case variation lookups compatible with both SQLite and PostgreSQL
         let user = await prisma.user.findUnique({
