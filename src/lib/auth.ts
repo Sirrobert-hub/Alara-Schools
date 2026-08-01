@@ -34,26 +34,12 @@ declare module "next-auth/jwt" {
   }
 }
 
-const isProd = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
-
 export const authOptions: NextAuthOptions = {
+  // NextAuth auto-detects HTTPS on Vercel and sets secure cookies correctly.
+  // DO NOT override useSecureCookies or cookies manually - it breaks things.
   secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "alara-smis-default-secret-2026",
   session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
   pages: { signIn: "/login" },
-  useSecureCookies: isProd,
-  cookies: isProd
-    ? {
-        sessionToken: {
-          name: `__Secure-next-auth.session-token`,
-          options: {
-            httpOnly: true,
-            sameSite: "lax",
-            path: "/",
-            secure: true,
-          },
-        },
-      }
-    : undefined,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -66,23 +52,25 @@ export const authOptions: NextAuthOptions = {
 
         const inputUsername = credentials.username.trim();
 
-        // Auto-seed database if empty
+        // Auto-seed database if empty (handles fresh Vercel/Neon deployments)
         try {
           const userCount = await prisma.user.count();
           if (userCount === 0) {
+            console.log("Database empty — auto-seeding...");
             await seedDatabase(prisma);
           }
         } catch (seedErr) {
           console.error("Auto-seed on authorize failed:", seedErr);
         }
 
-        // Safe case variation lookups compatible with both SQLite and PostgreSQL
+        // Safe case variation lookups compatible with PostgreSQL
         let user = await prisma.user.findUnique({
           where: { username: inputUsername },
         });
 
         if (!user) {
-          const capitalized = inputUsername.charAt(0).toUpperCase() + inputUsername.slice(1).toLowerCase();
+          const capitalized =
+            inputUsername.charAt(0).toUpperCase() + inputUsername.slice(1).toLowerCase();
           user = await prisma.user.findUnique({
             where: { username: capitalized },
           });
@@ -94,13 +82,8 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
-        if (!user) {
-          user = await prisma.user.findUnique({
-            where: { username: inputUsername.toUpperCase() },
-          });
-        }
-
         if (!user || !user.active) return null;
+
         const ok = await bcrypt.compare(credentials.password, user.passwordHash);
         if (!ok) return null;
 
