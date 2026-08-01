@@ -34,6 +34,7 @@ declare module "next-auth/jwt" {
 }
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET || "alara-smis-default-secret-2026",
   session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
   pages: { signIn: "/login" },
   providers: [
@@ -76,15 +77,19 @@ export const authOptions: NextAuthOptions = {
         const ok = await bcrypt.compare(credentials.password, user.passwordHash);
         if (!ok) return null;
 
-        await prisma.auditLog.create({
-          data: {
-            userId: user.id,
-            action: "LOGIN",
-            entity: "User",
-            entityId: user.id,
-            details: `User ${user.username} logged in`,
-          },
-        });
+        try {
+          await prisma.auditLog.create({
+            data: {
+              userId: user.id,
+              action: "LOGIN",
+              entity: "User",
+              entityId: user.id,
+              details: `User ${user.username} logged in`,
+            },
+          });
+        } catch (auditErr) {
+          console.error("Failed to create audit log on login:", auditErr);
+        }
 
         return {
           id: user.id,
