@@ -37,7 +37,7 @@ declare module "next-auth/jwt" {
 const isProd = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || "alara-smis-default-secret-2026",
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "alara-smis-default-secret-2026",
   session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
   pages: { signIn: "/login" },
   useSecureCookies: isProd,
