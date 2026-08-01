@@ -45,9 +45,31 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null;
-        const user = await prisma.user.findUnique({
-          where: { username: credentials.username },
+
+        const inputUsername = credentials.username.trim();
+
+        let user = await prisma.user.findFirst({
+          where: {
+            username: {
+              equals: inputUsername,
+              mode: "insensitive",
+            },
+          },
         });
+
+        if (!user) {
+          user = await prisma.user.findUnique({
+            where: { username: inputUsername },
+          });
+        }
+
+        if (!user) {
+          const capitalized = inputUsername.charAt(0).toUpperCase() + inputUsername.slice(1).toLowerCase();
+          user = await prisma.user.findUnique({
+            where: { username: capitalized },
+          });
+        }
+
         if (!user || !user.active) return null;
         const ok = await bcrypt.compare(credentials.password, user.passwordHash);
         if (!ok) return null;
