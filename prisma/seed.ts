@@ -1,4 +1,4 @@
-import { PrismaClient, Role, Gender, ExamTypeCode, ExamStatus } from "@prisma/client";
+import { PrismaClient, Role, Gender, ExamTypeCode, ExamStatus, type Student } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -23,7 +23,6 @@ function pick<T>(arr: T[], i: number): T {
 }
 
 function scoreFor(seed: number): number {
-  // Deterministic-ish scores between 25 and 95
   const v = ((seed * 37) % 71) + 25;
   return Math.min(95, Math.max(25, v));
 }
@@ -31,10 +30,13 @@ function scoreFor(seed: number): number {
 async function main() {
   console.log("Seeding ALara SMIS...");
 
+  await prisma.feePayment.deleteMany();
+  await prisma.announcement.deleteMany();
   await prisma.mark.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.examination.deleteMany();
   await prisma.teacherAssignment.deleteMany();
+  await prisma.attendance.deleteMany();
   await prisma.student.deleteMany();
   await prisma.user.deleteMany();
   await prisma.teacher.deleteMany();
@@ -99,12 +101,26 @@ async function main() {
     )
   );
 
-  const grade7 = await prisma.classLevel.create({
-    data: { name: "Grade 7", orderIndex: 7 },
-  });
-  const grade8 = await prisma.classLevel.create({
-    data: { name: "Grade 8", orderIndex: 8 },
-  });
+  // All 11 CBC Class Levels matching index.html
+  const classLevelsData = [
+    { name: "PP1", orderIndex: 1, feePerTerm: 12000 },
+    { name: "PP2", orderIndex: 2, feePerTerm: 12000 },
+    { name: "Grade 1", orderIndex: 3, feePerTerm: 15000 },
+    { name: "Grade 2", orderIndex: 4, feePerTerm: 15000 },
+    { name: "Grade 3", orderIndex: 5, feePerTerm: 15000 },
+    { name: "Grade 4", orderIndex: 6, feePerTerm: 18000 },
+    { name: "Grade 5", orderIndex: 7, feePerTerm: 18000 },
+    { name: "Grade 6", orderIndex: 8, feePerTerm: 18000 },
+    { name: "Grade 7", orderIndex: 9, feePerTerm: 24000 },
+    { name: "Grade 8", orderIndex: 10, feePerTerm: 24000 },
+    { name: "Grade 9", orderIndex: 11, feePerTerm: 24000 },
+  ];
+
+  const classLevels = [];
+  for (const cl of classLevelsData) {
+    classLevels.push(await prisma.classLevel.create({ data: cl }));
+  }
+
   const streamA = await prisma.stream.create({ data: { name: "A" } });
   const streamB = await prisma.stream.create({ data: { name: "B" } });
 
@@ -146,11 +162,15 @@ async function main() {
     );
   }
 
+  // Find Grade 7 & Grade 8
+  const g7Level = classLevels.find((l) => l.name === "Grade 7")!;
+  const g8Level = classLevels.find((l) => l.name === "Grade 8")!;
+
   const roomsSpec = [
-    { name: "Grade 7A", level: grade7, stream: streamA, teacher: teachers[0] },
-    { name: "Grade 7B", level: grade7, stream: streamB, teacher: teachers[3] },
-    { name: "Grade 8A", level: grade8, stream: streamA, teacher: teachers[4] },
-    { name: "Grade 8B", level: grade8, stream: streamB, teacher: teachers[5] },
+    { name: "Grade 7A", level: g7Level, stream: streamA, teacher: teachers[0] },
+    { name: "Grade 7B", level: g7Level, stream: streamB, teacher: teachers[3] },
+    { name: "Grade 8A", level: g8Level, stream: streamA, teacher: teachers[4] },
+    { name: "Grade 8B", level: g8Level, stream: streamB, teacher: teachers[5] },
   ];
 
   const classrooms = [];
@@ -167,14 +187,13 @@ async function main() {
     );
   }
 
-  // Assignments: each teacher gets subjects across rooms
   const assignmentPlan: Array<[number, number, number]> = [
-    [1, 0, 0], [1, 0, 2], // Ochieng Math 7A, 8A
-    [2, 1, 0], [2, 1, 1], // Mwangi Eng 7A, 7B
-    [3, 2, 2], [3, 2, 3], // Okello Kis 8A, 8B
-    [4, 3, 0], [4, 3, 1], // Atieno Sci
-    [5, 4, 2], [5, 4, 3], // Owino SST
-    [0, 5, 0], [0, 5, 1], // Ouma CRE (class teacher)
+    [1, 0, 0], [1, 0, 2],
+    [2, 1, 0], [2, 1, 1],
+    [3, 2, 2], [3, 2, 3],
+    [4, 3, 0], [4, 3, 1],
+    [5, 4, 2], [5, 4, 3],
+    [0, 5, 0], [0, 5, 1],
     [1, 6, 1], [1, 6, 3],
     [2, 7, 2], [2, 7, 3],
   ];
@@ -189,51 +208,54 @@ async function main() {
     });
   }
 
-  const users = [
-    { username: "Admin", name: "John Doe", role: Role.ADMIN, teacherId: null },
-    { username: "principal", name: "Mrs. Grace Otieno", role: Role.PRINCIPAL, teacherId: null },
-    { username: "deputy", name: "Mr. Peter Okoth", role: Role.DEPUTY, teacherId: null },
-    { username: "aouma", name: "Mrs. Alice Ouma", role: Role.CLASS_TEACHER, teacherId: teachers[0].id },
-    { username: "jochieng", name: "Mr. John Ochieng", role: Role.SUBJECT_TEACHER, teacherId: teachers[1].id },
+  const usersData = [
+    { username: "Admin", name: "John Doe (Admin)", role: Role.ADMIN, teacherId: null },
+    { username: "principal", name: "Dr. Jane Mwangi (Principal)", role: Role.PRINCIPAL, teacherId: null },
+    { username: "deputy", name: "Mr. Peter Odhiambo (Deputy)", role: Role.DEPUTY, teacherId: null },
+    { username: "aouma", name: "Mrs. Grace Akinyi (Grade 7 Teacher)", role: Role.CLASS_TEACHER, teacherId: teachers[0].id },
+    { username: "jochieng", name: "Mr. James Ochieng (Math Teacher)", role: Role.SUBJECT_TEACHER, teacherId: teachers[1].id },
     { username: "smwangi", name: "Ms. Sarah Mwangi", role: Role.SUBJECT_TEACHER, teacherId: teachers[2].id },
+    { username: "parent", name: "Mr. Peter Omondi (Parent)", role: Role.PARENT, teacherId: null },
   ];
 
-  for (const u of users) {
-    await prisma.user.create({
-      data: {
-        username: u.username,
-        passwordHash: hash,
-        name: u.name,
-        role: u.role,
-        teacherId: u.teacherId,
-        active: true,
-      },
-    });
+  const createdUsers = [];
+  for (const u of usersData) {
+    createdUsers.push(
+      await prisma.user.create({
+        data: {
+          username: u.username,
+          passwordHash: hash,
+          name: u.name,
+          role: u.role,
+          teacherId: u.teacherId,
+          active: true,
+        },
+      })
+    );
   }
 
-  // ~12 students per class = 48
-  const students = [];
+  const adminUser = createdUsers.find((u) => u.role === Role.ADMIN)!;
+
+  const students: Student[] = [];
   let adm = 1;
   for (let c = 0; c < classrooms.length; c++) {
     for (let i = 0; i < 12; i++) {
       const female = (c + i) % 2 === 0;
-      const first = female
-        ? pick(FIRST_NAMES_F, adm + i)
-        : pick(FIRST_NAMES_M, adm + i);
+      const first = female ? pick(FIRST_NAMES_F, adm + i) : pick(FIRST_NAMES_M, adm + i);
       const last = pick(LAST_NAMES, adm * 3 + i);
       const student = await prisma.student.create({
         data: {
           admissionNo: `ALA${String(2026).slice(2)}${String(adm).padStart(3, "0")}`,
-          upi: `UPI${String(100000 + adm)}`,
+          upi: `UPI2026${String(1000 + adm)}`,
           firstName: first,
           lastName: last,
           gender: female ? Gender.FEMALE : Gender.MALE,
-          dateOfBirth: new Date(2012 + (c < 2 ? 1 : 0), (i % 12), 5 + (i % 20)),
-          parentName: `Parent of ${first}`,
+          dateOfBirth: new Date(2012 + (c < 2 ? 1 : 0), i % 12, 5 + (i % 20)),
+          parentName: `Mr./Mrs. ${last}`,
           parentPhone: `+2547${String(10000000 + adm * 111).slice(0, 8)}`,
-          kcpeOrKpseaNo: `KPSEA${2024}${String(adm).padStart(4, "0")}`,
-          house: ["Lion", "Elephant", "Eagle", "Buffalo"][i % 4],
-          medicalNotes: i % 7 === 0 ? "Mild asthma — keep inhaler available" : null,
+          kcpeOrKpseaNo: `KPSEA2024${String(adm).padStart(4, "0")}`,
+          house: ["Elgon", "Kenya", "Kilimanjaro"][i % 3],
+          medicalNotes: i % 7 === 0 ? "Asthma - Keep Inhaler" : null,
           classroomId: classrooms[c].id,
         },
       });
@@ -242,9 +264,49 @@ async function main() {
     }
   }
 
-  const adminUser = await prisma.user.findUnique({ where: { username: "Admin" } });
+  // Seed Fee Payments matching index.html ledgers
+  for (let i = 0; i < students.length; i++) {
+    const st = students[i];
+    const paidAmt = i % 3 === 0 ? 24000 : i % 2 === 0 ? 15000 : 10000;
+    await prisma.feePayment.create({
+      data: {
+        studentId: st.id,
+        amount: paidAmt,
+        paymentMethod: i % 2 === 0 ? "M-Pesa" : "Bank Deposit",
+        referenceCode: `MPX${Math.floor(100000 + Math.random() * 899999)}`,
+        recordedById: adminUser.id,
+        paymentDate: new Date(2026, 4, 10 + (i % 15)),
+      },
+    });
+  }
 
-  // Past exams (2025 T3 end term) + current open exam (2026 T2 end term)
+  // Seed Announcements matching index.html
+  await prisma.announcement.createMany({
+    data: [
+      {
+        title: "Term 2 MidTerm Exams Schedule",
+        category: "Academic",
+        content: "Midterm examinations will commence on June 15th for all grades. Teachers are requested to finalize paper preparations.",
+        authorId: adminUser.id,
+        date: new Date("2026-06-01"),
+      },
+      {
+        title: "School Fees Clearance Reminder",
+        category: "Finance",
+        content: "Parents are requested to clear all outstanding fee balances prior to midterm break. Official receipts can be collected at the bursar office.",
+        authorId: adminUser.id,
+        date: new Date("2026-06-05"),
+      },
+      {
+        title: "County Music & Drama Festivals",
+        category: "Event",
+        content: "ALara School will host the Sub-County Music & Drama festival. Parents and guardians are invited to support our learners.",
+        authorId: adminUser.id,
+        date: new Date("2026-06-12"),
+      },
+    ],
+  });
+
   const pastExam = await prisma.examination.create({
     data: {
       name: "End Term Examination — Term 3 2025",
@@ -293,16 +355,11 @@ async function main() {
     },
   });
 
-  async function seedMarks(
-    examId: string,
-    leaveGaps: boolean,
-    submitted: boolean
-  ) {
+  async function seedMarks(examId: string, leaveGaps: boolean, submitted: boolean) {
     let n = 0;
     for (const student of students) {
       for (let s = 0; s < subjects.length; s++) {
         n++;
-        // Leave ~8% missing on open exam for alerts
         if (leaveGaps && n % 12 === 0) continue;
         await prisma.mark.create({
           data: {
@@ -310,7 +367,7 @@ async function main() {
             studentId: student.id,
             subjectId: subjects[s].id,
             score: scoreFor(n + student.admissionNo.charCodeAt(5) + s * 3),
-            enteredById: adminUser?.id,
+            enteredById: adminUser.id,
             submitted,
             submittedAt: submitted ? new Date() : null,
           },
@@ -324,7 +381,6 @@ async function main() {
   await seedMarks(catExam.id, false, true);
   await seedMarks(openExam.id, true, false);
 
-  // Set current year/term on settings
   const settings = await prisma.schoolSetting.findFirst();
   if (settings) {
     await prisma.schoolSetting.update({
@@ -336,17 +392,15 @@ async function main() {
     });
   }
 
-  await prisma.auditLog.create({
-    data: {
-      userId: adminUser?.id,
-      action: "SEED",
-      entity: "Database",
-      details: "Initial ALara SMIS seed completed",
-    },
+  await prisma.auditLog.createMany({
+    data: [
+      { userId: adminUser.id, action: "SYSTEM_INIT", entity: "System", details: "ALara SMIS v5.0 Database Initialized" },
+      { userId: adminUser.id, action: "SEED_DATA", entity: "Database", details: "Seeded learners, staff rosters, fee ledgers, and exams" },
+    ],
   });
 
   console.log("Seed complete.");
-  console.log("Logins (password Admin123): Admin, principal, deputy, aouma, jochieng, smwangi");
+  console.log("Logins (password Admin123): Admin, principal, deputy, aouma, jochieng, smwangi, parent");
   console.log(`Students: ${students.length}, Subjects: ${subjects.length}, Open exam: ${openExam.name}`);
 }
 

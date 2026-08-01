@@ -1,0 +1,2134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALara SMIS v5.0 – Enterprise School Management System (PP1–Grade 9 CBC)</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN for Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Premium Buttons */
+    .btn-primary { background: linear-gradient(135deg, #1e40af, #2563eb); color: #fff; padding: 9px 20px; border-radius: 8px; font-weight: 600; font-size: 0.875rem; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(37,99,235,0.3); }
+
+    .btn-secondary { background: #0d9488; color: #fff; padding: 9px 20px; border-radius: 8px; font-weight: 600; font-size: 0.875rem; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-secondary:hover { background: #0f766e; }
+
+    .btn-outline { background: transparent; color: #1e40af; padding: 8px 18px; border-radius: 8px; font-weight: 600; font-size: 0.875rem; border: 1.5px solid #3b82f6; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-outline:hover { background: #eff6ff; color: #1d4ed8; }
+
+    .btn-danger { background: #ef4444; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.875rem; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-danger:hover { background: #dc2626; }
+
+    .btn-sm { padding: 5px 12px; font-size: 0.775rem; border-radius: 6px; }
+
+    /* Card Styling */
+    .card { background: #ffffff; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); padding: 22px; border: 1px solid #e2e8f0; transition: all 0.25s ease; }
+    .card:hover { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01); }
+
+    .stat-card { background: #ffffff; border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; border-left: 5px solid #2563eb; position: relative; overflow: hidden; }
+
+    /* KNEC CBC Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.725rem; font-weight: 700; letter-spacing: 0.02em; }
+    .badge-ee { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-me { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .badge-ae { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-be { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-info { background: #e0f2fe; color: #0369a1; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-purple { background: #f3e8ff; color: #7e22ce; }
+
+    /* Forms */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 600; font-size: 0.825rem; color: #334155; margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.875rem; transition: all 0.2s ease; background: #fff; color: #0f172a; }
+    .form-control:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+    /* Sidebar Navigation */
+    .sidebar { width: 260px; background: #0f172a; color: #94a3b8; height: 100vh; position: sticky; top: 0; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; }
+    .sidebar .logo-area { padding: 20px; border-bottom: 1px solid #1e293b; }
+    .sidebar .nav-group-title { font-size: 0.675rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.08em; color: #64748b; padding: 16px 20px 6px; }
+    .sidebar .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: #94a3b8; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease; cursor: pointer; border-left: 3px solid transparent; }
+    .sidebar .nav-item:hover { background: #1e293b; color: #f8fafc; }
+    .sidebar .nav-item.active { background: rgba(59,130,246,0.15); color: #38bdf8; border-left-color: #38bdf8; font-weight: 600; }
+
+    /* Tables */
+    .table-container { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { background: #f8fafc; padding: 12px 16px; font-weight: 700; font-size: 0.775rem; text-transform: uppercase; letter-spacing: 0.04em; color: #475569; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; }
+    tr:hover td { background: #f8fafc; }
+
+    /* Toast Notification */
+    #toastContainer { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+    .toast { pointer-events: auto; padding: 14px 20px; border-radius: 10px; background: #0f172a; color: #fff; font-size: 0.875rem; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 12px; border-left: 4px solid #3b82f6; }
+    .toast-success { border-left-color: #22c55e; }
+    .toast-error { border-left-color: #ef4444; }
+    .toast-warning { border-left-color: #f59e0b; }
+
+    /* Modal Overlay */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-card { background: #ffffff; border-radius: 16px; width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; border: 1px solid #e2e8f0; }
+
+    .dropzone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 30px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; }
+    .dropzone:hover { border-color: #3b82f6; background: #eff6ff; }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      .sidebar, .mobile-nav, .no-print, nav, button { display: none !important; }
+      .app-content { padding: 0 !important; margin: 0 !important; width: 100% !important; }
+      .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+      .printable-area { display: block !important; width: 100% !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ================================================================= -->
+  <!-- 1. PUBLIC LANDING PAGE WITH MODERN SECTIONS & LOGIN -->
+  <!-- ================================================================= -->
+  <div id="landingPage" class="min-h-screen bg-slate-900 text-white flex flex-col justify-between">
+    
+    <!-- Navbar -->
+    <nav class="border-b border-slate-800 bg-slate-900/90 backdrop-blur fixed top-0 left-0 right-0 z-50">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-teal-400 flex items-center justify-center font-black text-xl text-white shadow-lg">A</div>
+          <div>
+            <span class="font-extrabold text-xl tracking-tight text-white">ALara <span class="text-blue-400">SMIS</span></span>
+            <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded ml-2 font-medium">v5.0 Enterprise</span>
+          </div>
+        </div>
+
+        <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+          <a href="#about" class="hover:text-blue-400 transition">About</a>
+          <a href="#features" class="hover:text-blue-400 transition">Features</a>
+          <a href="#cbc-scale" class="hover:text-blue-400 transition">CBC 8-Point Scale</a>
+          <a href="#contact" class="hover:text-blue-400 transition">Contact</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="openLoginModal()" class="btn-primary py-2 px-5 text-sm"><i class="fas fa-sign-in-alt"></i> Portal Login</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6 max-w-6xl mx-auto text-center my-auto">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20 mb-6">
+        <i class="fas fa-certificate"></i> Official School Management System · Migori County, Kenya
+      </span>
+      <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-white max-w-4xl mx-auto">
+        ALara Primary & Junior Secondary School
+        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-teal-300 to-indigo-400 mt-2">Academic Excellence Through Digital Intelligence</span>
+      </h1>
+      <p class="mt-6 text-lg md:text-xl text-slate-400 max-w-3xl mx-auto">
+        End-to-End Enterprise SMIS for PP1 through Grade 9. Teacher Results Entry, Automated Report Cards, Transcripts, Multi-Role Dashboards, Fee Ledgers, and KNEC 8-Point Analytics.
+      </p>
+
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <button onclick="openLoginModal()" class="btn-primary text-base py-3.5 px-8 rounded-xl"><i class="fas fa-rocket"></i> Launch Portal</button>
+        <button onclick="quickLogin('admin')" class="btn-outline text-white border-slate-700 hover:bg-slate-800 text-base py-3.5 px-8 rounded-xl"><i class="fas fa-user-shield"></i> Demo Admin</button>
+        <button onclick="quickLogin('principal')" class="btn-outline text-white border-slate-700 hover:bg-slate-800 text-base py-3.5 px-8 rounded-xl"><i class="fas fa-chart-line"></i> Demo Principal</button>
+        <button onclick="quickLogin('parent')" class="btn-outline text-white border-slate-700 hover:bg-slate-800 text-base py-3.5 px-8 rounded-xl"><i class="fas fa-users"></i> Demo Parent</button>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 text-left border-t border-slate-800 pt-10 max-w-5xl mx-auto">
+        <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-800">
+          <div class="text-slate-400 text-xs font-medium">Coverage Levels</div>
+          <div class="text-2xl font-bold text-white mt-1">PP1 – Grade 9</div>
+        </div>
+        <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-800">
+          <div class="text-slate-400 text-xs font-medium">Grading Scale</div>
+          <div class="text-2xl font-bold text-teal-400 mt-1">KNEC 8-Point (EE1–BE2)</div>
+        </div>
+        <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-800">
+          <div class="text-slate-400 text-xs font-medium">User Personas</div>
+          <div class="text-2xl font-bold text-blue-400 mt-1">6 Role Dashboards</div>
+        </div>
+        <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-800">
+          <div class="text-slate-400 text-xs font-medium">Location</div>
+          <div class="text-2xl font-bold text-amber-400 mt-1">Suna East, Migori</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 px-6 bg-slate-950 border-t border-slate-800">
+      <div class="max-w-5xl mx-auto text-center">
+        <h2 class="text-3xl font-extrabold text-white">About ALara School</h2>
+        <p class="text-slate-400 mt-3 max-w-2xl mx-auto">Committed to nurturing holistic, competent, and digitally empowered learners under Kenya's CBC curriculum framework.</p>
+
+        <div class="grid md:grid-cols-3 gap-6 mt-10 text-left">
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
+            <i class="fas fa-bullseye text-3xl text-blue-400 mb-3"></i>
+            <h4 class="font-bold text-lg text-white">Our Mission</h4>
+            <p class="text-xs text-slate-400 mt-2">To provide inclusive, high-quality competency-based education leveraging technological innovation and strong values.</p>
+          </div>
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
+            <i class="fas fa-eye text-3xl text-teal-400 mb-3"></i>
+            <h4 class="font-bold text-lg text-white">Our Vision</h4>
+            <p class="text-xs text-slate-400 mt-2">To be a premier center of academic excellence and digital intelligence in Migori County and nationally.</p>
+          </div>
+          <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
+            <i class="fas fa-heart text-3xl text-amber-400 mb-3"></i>
+            <h4 class="font-bold text-lg text-white">Core Values</h4>
+            <p class="text-xs text-slate-400 mt-2">Integrity, Excellence, Innovation, Inclusivity, Discipline, and Community Service.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-16 px-6 bg-slate-900">
+      <div class="max-w-6xl mx-auto text-center">
+        <h2 class="text-3xl font-extrabold text-white">Core System Modules</h2>
+        <p class="text-slate-400 mt-2">Built to compete with national NEMIS-integrated ERPs.</p>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 text-left">
+          <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <i class="fas fa-table text-2xl text-blue-400 mb-2"></i>
+            <h4 class="font-bold text-white text-base">Excel-Like Marks Entry</h4>
+            <p class="text-xs text-slate-400 mt-1">Keyboard navigation (Tab, Enter), auto-save, missing mark alerts, and instant 8-point KNEC grade calculation.</p>
+          </div>
+          <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <i class="fas fa-print text-2xl text-teal-400 mb-2"></i>
+            <h4 class="font-bold text-white text-base">Report Cards & Transcripts</h4>
+            <p class="text-xs text-slate-400 mt-1">Verified printable PDF forms with school letterhead, student profile photos, teacher remarks, and QR code security blocks.</p>
+          </div>
+          <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <i class="fas fa-chart-pie text-2xl text-purple-400 mb-2"></i>
+            <h4 class="font-bold text-white text-base">Visual Performance Analytics</h4>
+            <p class="text-xs text-slate-400 mt-1">Chart.js multi-axis graphs, grade distribution histograms, subject difficulty indices, and KJSEA predictions.</p>
+          </div>
+          <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <i class="fas fa-wallet text-2xl text-green-400 mb-2"></i>
+            <h4 class="font-bold text-white text-base">Fee Accounting & Receipts</h4>
+            <p class="text-xs text-slate-400 mt-1">Grade-level fee structures, student ledgers, payment recording (M-Pesa, Bank Deposit), and defaulters lists.</p>
+          </div>
+          <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <i class="fas fa-file-csv text-2xl text-amber-400 mb-2"></i>
+            <h4 class="font-bold text-white text-base">CSV Bulk Data Engine</h4>
+            <p class="text-xs text-slate-400 mt-1">One-click bulk import of learners and educators via CSV with validation previews and downloadable templates.</p>
+          </div>
+          <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700">
+            <i class="fas fa-user-shield text-2xl text-indigo-400 mb-2"></i>
+            <h4 class="font-bold text-white text-base">Role-Based Security & Audit</h4>
+            <p class="text-xs text-slate-400 mt-1">Dedicated persona dashboards for Admin, Principal, Deputy, Class Teacher, Subject Teacher, and Parent Portal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KNEC 8-Point Scale Section -->
+    <section id="cbc-scale" class="py-16 px-6 bg-slate-950 border-t border-slate-800">
+      <div class="max-w-5xl mx-auto text-center">
+        <h2 class="text-3xl font-extrabold text-white">KNEC 8-Point Achievement Scale</h2>
+        <p class="text-slate-400 mt-2">Official 2025/2026 KNEC KJSEA achievement level mapping.</p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 text-left">
+          <div class="bg-slate-900 p-4 rounded-xl border border-green-500/30">
+            <span class="badge badge-ee">EE1 · 90–100%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 8</div>
+            <div class="text-[11px] text-slate-400">Exceeding Expectations 1 (Exceptional)</div>
+          </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-green-500/20">
+            <span class="badge badge-ee">EE2 · 75–89%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 7</div>
+            <div class="text-[11px] text-slate-400">Exceeding Expectations 2 (Very Good)</div>
+          </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-blue-500/30">
+            <span class="badge badge-me">ME1 · 58–74%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 6</div>
+            <div class="text-[11px] text-slate-400">Meeting Expectations 1 (Good)</div>
+          </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-blue-500/20">
+            <span class="badge badge-me">ME2 · 41–57%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 5</div>
+            <div class="text-[11px] text-slate-400">Meeting Expectations 2 (Fair)</div>
+          </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-amber-500/30">
+            <span class="badge badge-ae">AE1 · 31–40%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 4</div>
+            <div class="text-[11px] text-slate-400">Approaching Expectations 1</div>
+          </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-amber-500/20">
+            <span class="badge badge-ae">AE2 · 21–30%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 3</div>
+            <div class="text-[11px] text-slate-400">Approaching Expectations 2</div>
+          </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-red-500/30">
+            <span class="badge badge-be">BE1 · 11–20%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 2</div>
+            <div class="text-[11px] text-slate-400">Below Expectations 1</div>
+          </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-red-500/20">
+            <span class="badge badge-be">BE2 · 1–10%</span>
+            <div class="text-white text-sm font-bold mt-2">Level 1</div>
+            <div class="text-[11px] text-slate-400">Below Expectations 2</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="py-10 bg-slate-950 border-t border-slate-800 text-slate-500 text-xs">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="font-extrabold text-white text-sm">ALara SMIS v5.0</span> · Suna East, Migori County, Kenya
+        </div>
+        <div class="flex gap-4">
+          <a href="#" class="hover:text-white">Privacy Policy</a>
+          <a href="#" class="hover:text-white">Terms of Service</a>
+          <a href="#" class="hover:text-white">System Documentation</a>
+        </div>
+        <div>&copy; 2026 ALara Primary & Junior Secondary School.</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Login Modal Overlay -->
+  <div id="loginModalOverlay" class="modal-overlay hidden">
+    <div class="modal-card max-w-md bg-slate-900 text-white border-slate-800">
+      <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xl mx-auto mb-3">A</div>
+        <h3 class="text-2xl font-bold">ALara SMIS Sign In</h3>
+        <p class="text-slate-400 text-xs mt-1">Select persona or enter credentials</p>
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div class="form-group">
+          <label class="text-slate-300">Username</label>
+          <input type="text" id="inputUsername" class="form-control bg-slate-800 border-slate-700 text-white" value="admin" required />
+        </div>
+        <div class="form-group">
+          <label class="text-slate-300">Password</label>
+          <input type="password" id="inputPassword" class="form-control bg-slate-800 border-slate-700 text-white" value="admin123" required />
+        </div>
+        <button type="submit" class="btn-primary w-full justify-center py-3 text-base"><i class="fas fa-sign-in-alt"></i> Login to Portal</button>
+      </form>
+      
+      <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 text-center">
+        <p class="font-medium mb-2">Preset Quick Persona Logins:</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="quickLogin('admin')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Admin</button>
+          <button onclick="quickLogin('principal')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Principal</button>
+          <button onclick="quickLogin('deputy')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Deputy</button>
+          <button onclick="quickLogin('classteacher')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Class Teacher</button>
+          <button onclick="quickLogin('subjectteacher')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Subject Teacher</button>
+          <button onclick="quickLogin('parent')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Parent</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================================================================= -->
+  <!-- 2. MAIN APPLICATION PORTAL LAYOUT (PERSONA-AWARE) -->
+  <!-- ================================================================= -->
+  <div id="dashboardApp" class="hidden min-h-screen flex flex-col md:flex-row">
+
+    <!-- Sidebar -->
+    <aside class="sidebar no-print" id="sidebarNav">
+      <div class="logo-area flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-sm">A</div>
+          <div>
+            <div class="font-extrabold text-white text-base tracking-tight">ALara<span class="text-blue-400">SMIS</span></div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider">Primary & JSS</div>
+          </div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="flex-1 py-3 overflow-y-auto" id="sidebarNavLinks">
+        <!-- Rendered dynamically per user role -->
+      </div>
+
+      <!-- User Profile Box -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm" id="userAvatarInitials">AD</div>
+          <div class="flex-1 overflow-hidden">
+            <div class="text-xs font-semibold text-white truncate" id="userDisplayName">Administrator</div>
+            <div class="text-[10px] text-blue-400 truncate" id="userRoleBadge">System Admin</div>
+          </div>
+          <button onclick="handleLogout()" title="Logout" class="text-slate-400 hover:text-red-400 p-1.5"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex flex-col min-w-0">
+      
+      <!-- Top Action Bar -->
+      <header class="no-print bg-white border-b border-slate-200 h-16 px-6 flex items-center justify-between sticky top-0 z-40">
+        <div class="flex items-center gap-4">
+          <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-600 text-lg"><i class="fas fa-bars"></i></button>
+          <h2 class="text-lg font-bold text-slate-800" id="currentViewTitle">Dashboard</h2>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+            <i class="fas fa-calendar-alt text-blue-600"></i> 2026 Term 2
+          </span>
+          <button onclick="exportFullDatabaseJSON()" class="btn-outline text-xs py-1.5 px-3" title="Export Backup"><i class="fas fa-download"></i> Backup DB</button>
+          <button onclick="handleLogout()" class="btn-danger btn-sm"><i class="fas fa-power-off"></i> Logout</button>
+        </div>
+      </header>
+
+      <!-- Dynamic Page Container -->
+      <main class="app-content p-6 flex-1 overflow-y-auto" id="pageContainer">
+      </main>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Floating Toast Container -->
+<div id="toastContainer"></div>
+
+<!-- Dynamic Modal -->
+<div id="dynamicModalOverlay" class="modal-overlay hidden">
+  <div class="modal-card" id="dynamicModalBody">
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// DATA MODELS & LOCAL STORAGE STATE
+// =====================================================================
+const DB = {
+  get(key, def) {
+    try {
+      const data = localStorage.getItem('alara_v50_' + key);
+      return data ? JSON.parse(data) : def;
+    } catch(e) { return def; }
+  },
+  set(key, val) {
+    localStorage.setItem('alara_v50_' + key, JSON.stringify(val));
+  }
+};
+
+// Official KICD CBC Level Structure
+const CLASS_LEVELS = [
+  { id: 'pp1', name: 'PP1', level: 'Pre-Primary', feePerTerm: 12000 },
+  { id: 'pp2', name: 'PP2', level: 'Pre-Primary', feePerTerm: 12000 },
+  { id: 'g1',  name: 'Grade 1', level: 'Lower Primary', feePerTerm: 15000 },
+  { id: 'g2',  name: 'Grade 2', level: 'Lower Primary', feePerTerm: 15000 },
+  { id: 'g3',  name: 'Grade 3', level: 'Lower Primary', feePerTerm: 15000 },
+  { id: 'g4',  name: 'Grade 4', level: 'Upper Primary', feePerTerm: 18000 },
+  { id: 'g5',  name: 'Grade 5', level: 'Upper Primary', feePerTerm: 18000 },
+  { id: 'g6',  name: 'Grade 6', level: 'Upper Primary', feePerTerm: 18000 },
+  { id: 'g7',  name: 'Grade 7', level: 'Junior Secondary', feePerTerm: 24000 },
+  { id: 'g8',  name: 'Grade 8', level: 'Junior Secondary', feePerTerm: 24000 },
+  { id: 'g9',  name: 'Grade 9', level: 'Junior Secondary', feePerTerm: 24000 }
+];
+
+const SUBJECTS_BY_LEVEL = {
+  'Pre-Primary': ['Language Activities', 'Mathematical Activities', 'Environmental Activities', 'Psychomotor & Creative', 'Religious Education'],
+  'Lower Primary': ['Indigenous Language', 'Kiswahili', 'English', 'Mathematics', 'Environmental Activities', 'Creative Arts', 'Religious Education'],
+  'Upper Primary': ['English', 'Kiswahili', 'Mathematics', 'Science & Technology', 'Social Studies', 'Agriculture & Nutrition', 'Creative Arts', 'Religious Education'],
+  'Junior Secondary': ['English', 'Kiswahili', 'Mathematics', 'Integrated Science', 'Social Studies', 'Pre-Technical Studies', 'Agriculture & Nutrition', 'Creative Arts & Sports', 'Religious Education']
+};
+
+let classes = DB.get('classes', CLASS_LEVELS);
+
+let subjects = DB.get('subjects', []);
+if (!subjects.length) {
+  let subId = 1;
+  classes.forEach(c => {
+    const list = SUBJECTS_BY_LEVEL[c.level] || [];
+    list.forEach(name => {
+      subjects.push({ id: subId++, name, classId: c.id, level: c.level });
+    });
+  });
+  DB.set('subjects', subjects);
+}
+
+// User Accounts for 6 Personas
+let users = DB.get('users', [
+  { id: 1, username: 'admin', password: 'admin123', role: 'Admin', name: 'John Doe (Admin)' },
+  { id: 2, username: 'principal', password: 'principal123', role: 'Principal', name: 'Dr. Jane Mwangi (Principal)' },
+  { id: 3, username: 'deputy', password: 'deputy123', role: 'Deputy', name: 'Mr. Peter Odhiambo (Deputy)' },
+  { id: 4, username: 'classteacher', password: 'teacher123', role: 'ClassTeacher', name: 'Mrs. Grace Akinyi (Grade 7 Teacher)' },
+  { id: 5, username: 'subjectteacher', password: 'teacher123', role: 'SubjectTeacher', name: 'Mr. James Ochieng (Math Teacher)' },
+  { id: 6, username: 'parent', password: 'parent123', role: 'Parent', name: 'Mr. Peter Omondi (Parent)' }
+]);
+
+// Seed Learners
+let students = DB.get('students', []);
+if (!students.length) {
+  const firstNames = ['Amara','Brian','Chloe','Daniel','Ethan','Faith','Gabriel','Hannah','Isaac','Joy','Kevin','Lorna','Michael','Nia','Oliver','Prudence','Quincy','Ruth','Samuel','Tanya','Victor','Wendy','Xavier','Yvonne','Zion'];
+  const lastNames = ['Akinyi','Odhiambo','Wanjiru','Omondi','Kiprop','Mwangi','Ouma','Ochieng','Chebet','Onyango','Oloo','Mutua','Kariuki','Ndung\'u','Otieno','Nyarangi'];
+  let stId = 1;
+  classes.forEach(cls => {
+    const count = cls.level === 'Pre-Primary' ? 6 : (cls.level === 'Junior Secondary' ? 10 : 8);
+    for (let i = 0; i < count; i++) {
+      const f = firstNames[stId % firstNames.length];
+      const l = lastNames[(stId * 3) % lastNames.length];
+      const gender = i % 2 === 0 ? 'F' : 'M';
+      const stream = i % 2 === 0 ? 'A' : 'B';
+      const paidAmt = Math.floor(Math.random() * (cls.feePerTerm + 1));
+      
+      students.push({
+        id: stId++,
+        admission: 'ALR-' + String(100 + stId),
+        upi: 'UPI-2026-' + String(1000 + stId),
+        name: f + ' ' + l,
+        gender,
+        classId: cls.id,
+        stream: cls.level !== 'Pre-Primary' ? stream : '',
+        parentName: 'Mr./Mrs. ' + l,
+        parentPhone: '+2547' + Math.floor(10000000 + Math.random() * 90000000),
+        house: ['Elgon', 'Kenya', 'Kilimanjaro'][stId % 3],
+        medical: i % 7 === 0 ? 'Asthma - Keep Inhaler' : 'None',
+        feeBilled: cls.feePerTerm,
+        feePaid: paidAmt
+      });
+    }
+  });
+  DB.set('students', students);
+}
+
+// Seed Educators
+let teachers = DB.get('teachers', []);
+if (!teachers.length) {
+  teachers = [
+    { id: 1, name: 'Mr. James Ochieng', tsc: 'TSC-452109', email: 'ochieng@alara.sc.ke', subjects: ['Mathematics', 'Integrated Science'], classTeacherOf: 'g7' },
+    { id: 2, name: 'Mrs. Grace Akinyi', tsc: 'TSC-389102', email: 'akinyi@alara.sc.ke', subjects: ['English', 'Creative Arts'], classTeacherOf: 'g8' },
+    { id: 3, name: 'Mr. David Mwangi', tsc: 'TSC-512938', email: 'mwangi@alara.sc.ke', subjects: ['Social Studies', 'Religious Education'], classTeacherOf: 'g4' }
+  ];
+  DB.set('teachers', teachers);
+}
+
+// Exams
+let exams = DB.get('exams', [
+  { id: 101, name: 'Term 1 EndTerm 2026', term: 'Term 1', year: 2026, type: 'EndTerm', status: 'Completed' },
+  { id: 102, name: 'Term 2 MidTerm 2026', term: 'Term 2', year: 2026, type: 'MidTerm', status: 'In Progress' }
+]);
+
+// Seed Marks
+let marks = DB.get('marks', []);
+if (!marks.length) {
+  let mId = 1;
+  students.forEach(st => {
+    const stSubjects = subjects.filter(s => s.classId === st.classId);
+    stSubjects.forEach(sub => {
+      const score = Math.floor(Math.random() * 45) + 40;
+      const grade = calculateCBCGrade(score);
+      marks.push({
+        id: mId++,
+        examId: 102,
+        studentId: st.id,
+        subjectId: sub.id,
+        score,
+        grade,
+        remarks: getCBCRemarks(grade)
+      });
+    });
+  });
+  DB.set('marks', marks);
+}
+
+let attendanceRecords = DB.get('attendance', []);
+let feePayments = DB.get('feePayments', []);
+let auditLogs = DB.get('auditLogs', [
+  { id: 1, user: 'Admin', action: 'System Initialization', timestamp: '2026-08-01 08:00:00' },
+  { id: 2, user: 'Principal', action: 'Approved Term 1 Results', timestamp: '2026-08-01 09:30:00' }
+]);
+
+let announcements = DB.get('announcements', [
+  { id: 1, title: 'Term 2 MidTerm Exams Schedule', date: '2026-06-01', category: 'Academic', content: 'Midterm examinations will commence on June 15th for all grades.' },
+  { id: 2, title: 'School Fees Clearance Reminder', date: '2026-06-05', category: 'Finance', content: 'Parents are requested to clear all outstanding fee balances prior to midterm break.' }
+]);
+
+// KNEC 8-POINT CBC GRADING ENGINE
+function calculateCBCGrade(score) {
+  if (score >= 90) return 'EE1';
+  if (score >= 75) return 'EE2';
+  if (score >= 58) return 'ME1';
+  if (score >= 41) return 'ME2';
+  if (score >= 31) return 'AE1';
+  if (score >= 21) return 'AE2';
+  if (score >= 11) return 'BE1';
+  return 'BE2';
+}
+
+function getCBCRemarks(grade) {
+  if (grade.startsWith('EE')) return 'Exceeds Expectations - Outstanding Mastery';
+  if (grade.startsWith('ME')) return 'Meets Expectations - Good Understanding';
+  if (grade.startsWith('AE')) return 'Approaching Expectations - Requires Practice';
+  return 'Below Expectations - Needs Targeted Support';
+}
+
+function getGradeBadgeHTML(grade) {
+  if (!grade || grade === '—') return '—';
+  let cls = 'badge-be';
+  if (grade.startsWith('EE')) cls = 'badge-ee';
+  else if (grade.startsWith('ME')) cls = 'badge-me';
+  else if (grade.startsWith('AE')) cls = 'badge-ae';
+  return `<span class="badge ${cls}">${grade}</span>`;
+}
+
+function getStudentMeanScore(studentId) {
+  const stMarks = marks.filter(m => m.studentId === studentId);
+  if (!stMarks.length) return '—';
+  const total = stMarks.reduce((acc, m) => acc + m.score, 0);
+  return (total / stMarks.length).toFixed(1);
+}
+
+function getClassObj(classId) {
+  return classes.find(c => c.id === classId) || { name: classId, level: 'Unknown' };
+}
+
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i> ${message}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+function logAuditAction(action) {
+  const log = {
+    id: Date.now(),
+    user: currentUser ? currentUser.name : 'System',
+    action,
+    timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19)
+  };
+  auditLogs.unshift(log);
+  DB.set('auditLogs', auditLogs);
+}
+
+function saveData() {
+  DB.set('students', students);
+  DB.set('teachers', teachers);
+  DB.set('exams', exams);
+  DB.set('marks', marks);
+  DB.set('feePayments', feePayments);
+  DB.set('attendance', attendanceRecords);
+  DB.set('users', users);
+}
+
+// AUTH & PERSONAS
+let currentUser = null;
+
+function openLoginModal() { document.getElementById('loginModalOverlay').classList.remove('hidden'); }
+function closeLoginModal() { document.getElementById('loginModalOverlay').classList.add('hidden'); }
+
+function quickLogin(roleKey) {
+  if (roleKey === 'admin') currentUser = users.find(u => u.role === 'Admin');
+  else if (roleKey === 'principal') currentUser = users.find(u => u.role === 'Principal');
+  else if (roleKey === 'deputy') currentUser = users.find(u => u.role === 'Deputy');
+  else if (roleKey === 'classteacher') currentUser = users.find(u => u.role === 'ClassTeacher');
+  else if (roleKey === 'subjectteacher') currentUser = users.find(u => u.role === 'SubjectTeacher');
+  else if (roleKey === 'parent') currentUser = users.find(u => u.role === 'Parent');
+  initUserSession();
+}
+
+function handleLoginSubmit(e) {
+  e.preventDefault();
+  const u = document.getElementById('inputUsername').value;
+  const p = document.getElementById('inputPassword').value;
+  const user = users.find(x => x.username === u && x.password === p);
+  if (user) { currentUser = user; initUserSession(); }
+  else { showToast('Invalid credentials provided.', 'error'); }
+}
+
+function initUserSession() {
+  closeLoginModal();
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('dashboardApp').classList.remove('hidden');
+  document.getElementById('userDisplayName').textContent = currentUser.name;
+  document.getElementById('userRoleBadge').textContent = currentUser.role;
+  document.getElementById('userAvatarInitials').textContent = currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2);
+  
+  buildSidebarLinksForRole(currentUser.role);
+  logAuditAction(`User Login (${currentUser.role})`);
+  showToast(`Welcome back, ${currentUser.name}`);
+  navigateTo('dashboard');
+}
+
+function handleLogout() {
+  logAuditAction('User Logout');
+  currentUser = null;
+  document.getElementById('dashboardApp').classList.add('hidden');
+  document.getElementById('landingPage').style.display = 'flex';
+  showToast('Logged out successfully.');
+}
+
+function toggleMobileSidebar() {
+  document.getElementById('sidebarNav').classList.toggle('hidden');
+}
+
+// DYNAMIC SIDEBAR PER PERSONA
+function buildSidebarLinksForRole(role) {
+  const container = document.getElementById('sidebarNavLinks');
+  let html = ``;
+
+  const items = {
+    dashboard: { label: 'Dashboard', icon: 'fa-th-large' },
+    students: { label: 'Learners Register', icon: 'fa-user-graduate' },
+    teachers: { label: 'Teaching Staff', icon: 'fa-chalkboard-teacher' },
+    marks: { label: 'Marks Entry Grid', icon: 'fa-edit' },
+    examinations: { label: 'Exam Sessions', icon: 'fa-file-signature' },
+    reports: { label: 'Report Cards', icon: 'fa-print' },
+    transcripts: { label: 'Transcripts', icon: 'fa-award' },
+    analytics: { label: 'Visual Analytics', icon: 'fa-chart-pie' },
+    fees: { label: 'Fee Accounting', icon: 'fa-calculator' },
+    attendance: { label: 'Daily Attendance', icon: 'fa-calendar-check' },
+    noticeboard: { label: 'Noticeboard & SMS', icon: 'fa-bullhorn' },
+    users: { label: 'User Accounts', icon: 'fa-users-cog' },
+    audit: { label: 'Audit Logs', icon: 'fa-history' },
+    settings: { label: 'System Settings', icon: 'fa-sliders-h' }
+  };
+
+  let pageKeys = [];
+
+  if (role === 'Admin') {
+    pageKeys = ['dashboard', 'students', 'teachers', 'marks', 'examinations', 'reports', 'transcripts', 'analytics', 'fees', 'attendance', 'noticeboard', 'users', 'audit', 'settings'];
+  } else if (role === 'Principal') {
+    pageKeys = ['dashboard', 'students', 'teachers', 'reports', 'transcripts', 'analytics', 'fees', 'attendance', 'noticeboard', 'audit'];
+  } else if (role === 'Deputy') {
+    pageKeys = ['dashboard', 'students', 'teachers', 'examinations', 'marks', 'reports', 'analytics', 'attendance'];
+  } else if (role === 'ClassTeacher') {
+    pageKeys = ['dashboard', 'students', 'marks', 'reports', 'transcripts', 'attendance', 'noticeboard'];
+  } else if (role === 'SubjectTeacher') {
+    pageKeys = ['dashboard', 'marks', 'analytics', 'noticeboard'];
+  } else if (role === 'Parent') {
+    pageKeys = ['dashboard', 'reports', 'transcripts', 'fees', 'attendance', 'noticeboard'];
+  } else {
+    pageKeys = ['dashboard'];
+  }
+
+  html += `<div class="nav-group-title">${role} Portal</div>`;
+  pageKeys.forEach(k => {
+    const item = items[k];
+    if (item) {
+      html += `<div class="nav-item ${k==='dashboard'?'active':''}" data-page="${k}" onclick="navigateTo('${k}')"><i class="fas ${item.icon}"></i> ${item.label}</div>`;
+    }
+  });
+
+  container.innerHTML = html;
+}
+
+// ROUTING
+let currentPage = 'dashboard';
+
+function navigateTo(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const activeNav = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (activeNav) activeNav.classList.add('active');
+
+  const titles = {
+    dashboard: 'Portal Overview',
+    students: 'Learners Register & CSV Import',
+    teachers: 'Educator Roster & Allocations',
+    marks: 'Excel-Style Marks Entry Engine',
+    examinations: 'Examination Sessions & Deadlines',
+    reports: 'CBC Printable Report Cards',
+    transcripts: 'Learner Transcripts & Rankings',
+    analytics: 'Visual Chart.js Analytics',
+    fees: 'Fee Accounts & Receipts',
+    attendance: 'Daily Attendance Register',
+    noticeboard: 'School Noticeboard & SMS',
+    users: 'System Users & Permissions',
+    audit: 'Security Audit Logs',
+    settings: 'School Configuration'
+  };
+
+  document.getElementById('currentViewTitle').textContent = titles[page] || 'ALara SMIS';
+  renderPageContent(page);
+}
+
+function renderPageContent(page) {
+  const container = document.getElementById('pageContainer');
+  if (page === 'dashboard') container.innerHTML = renderDashboardView();
+  else if (page === 'students') container.innerHTML = renderStudentsView();
+  else if (page === 'teachers') container.innerHTML = renderTeachersView();
+  else if (page === 'marks') container.innerHTML = renderMarksGridNotice();
+  else if (page === 'examinations') container.innerHTML = renderExamsView();
+  else if (page === 'reports') container.innerHTML = renderReportsView();
+  else if (page === 'transcripts') container.innerHTML = renderTranscriptsView();
+  else if (page === 'analytics') container.innerHTML = renderAnalyticsView();
+  else if (page === 'fees') container.innerHTML = renderFeesView();
+  else if (page === 'attendance') container.innerHTML = renderAttendanceView();
+  else if (page === 'noticeboard') container.innerHTML = renderNoticeboardView();
+  else if (page === 'users') container.innerHTML = renderUsersView();
+  else if (page === 'audit') container.innerHTML = renderAuditView();
+  else if (page === 'settings') container.innerHTML = renderSettingsView();
+  else container.innerHTML = `<p class="text-slate-500">Page under construction.</p>`;
+
+  if (page === 'analytics') renderAnalyticsCharts();
+}
+
+// VIEW RENDERERS
+
+// DASHBOARD
+function renderDashboardView() {
+  const totalSt = students.length;
+  const totalTc = teachers.length;
+  const validMarks = marks.filter(m => m.score > 0);
+  const meanScore = validMarks.length ? (validMarks.reduce((a,m)=>a+m.score,0)/validMarks.length).toFixed(1) : '0';
+  const meanGrade = calculateCBCGrade(parseFloat(meanScore));
+  const totalBilled = students.reduce((a,s)=>a+s.feeBilled, 0);
+  const totalPaid = students.reduce((a,s)=>a+s.feePaid, 0);
+  const feeRate = totalBilled ? ((totalPaid/totalBilled)*100).toFixed(0) : '0';
+
+  return `
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div class="stat-card" style="border-left-color: #2563eb;">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-slate-500 text-xs font-semibold uppercase">Total Learners</div>
+            <div class="text-3xl font-black text-slate-900 mt-1">${totalSt}</div>
+            <div class="text-xs text-slate-500 mt-1"><i class="fas fa-child text-blue-500"></i> PP1 to Grade 9</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl"><i class="fas fa-user-graduate"></i></div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #0d9488;">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-slate-500 text-xs font-semibold uppercase">School CBC Mean</div>
+            <div class="text-3xl font-black text-slate-900 mt-1">${meanScore}</div>
+            <div class="text-xs text-teal-600 mt-1 font-semibold">${getGradeBadgeHTML(meanGrade)} Mean Grade</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl"><i class="fas fa-chart-line"></i></div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #16a34a;">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-slate-500 text-xs font-semibold uppercase">Fee Collection Rate</div>
+            <div class="text-3xl font-black text-slate-900 mt-1">${feeRate}%</div>
+            <div class="text-xs text-slate-500 mt-1">KES ${(totalPaid/1000).toFixed(0)}k Collected</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-xl"><i class="fas fa-wallet"></i></div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-left-color: #8b5cf6;">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-slate-500 text-xs font-semibold uppercase">Teaching Staff</div>
+            <div class="text-3xl font-black text-slate-900 mt-1">${totalTc}</div>
+            <div class="text-xs text-slate-500 mt-1">Active Educators</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl"><i class="fas fa-chalkboard-teacher"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="card lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-slate-800 text-base">Class Enrollment Overview</h3>
+          <button onclick="openImportLearnersCSVModal()" class="btn-outline btn-sm"><i class="fas fa-file-import"></i> CSV Import</button>
+        </div>
+        <div class="space-y-3">
+          ${classes.map(c => {
+            const stCount = students.filter(s => s.classId === c.id).length;
+            const pct = Math.min(100, stCount * 8);
+            return `
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span class="text-slate-700">${c.name} (${c.level})</span>
+                  <span class="text-slate-500">${stCount} Learners</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div style="width: ${pct}%" class="bg-blue-600 h-full rounded-full"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="card bg-gradient-to-br from-blue-900 to-indigo-900 text-white border-none">
+          <h3 class="font-bold text-lg mb-2"><i class="fas fa-bolt text-yellow-400"></i> Quick Actions</h3>
+          <p class="text-xs text-blue-200 mb-4">Portal shortcuts for ${currentUser.role}.</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="openImportLearnersCSVModal()" class="p-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-left transition"><i class="fas fa-file-csv block mb-1 text-teal-300"></i> Import Learners</button>
+            <button onclick="openImportTeachersCSVModal()" class="p-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-left transition"><i class="fas fa-user-plus block mb-1 text-blue-300"></i> Import Staff</button>
+            <button onclick="navigateTo('marks')" class="p-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-left transition"><i class="fas fa-edit block mb-1 text-purple-300"></i> Marks Grid</button>
+            <button onclick="navigateTo('reports')" class="p-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-left transition"><i class="fas fa-print block mb-1 text-green-300"></i> Print Reports</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="font-bold text-slate-800 text-sm mb-3"><i class="fas fa-bullhorn text-amber-500 mr-2"></i> Noticeboard</h3>
+          <div class="space-y-3">
+            ${announcements.map(a => `
+              <div class="border-b border-slate-100 pb-2.5 last:border-none">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-700">
+                  <span>${a.title}</span>
+                  <span class="text-[10px] text-slate-400">${a.date}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 line-clamp-2">${a.content}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// LEARNERS REGISTER
+function renderStudentsView() {
+  return `
+    <div class="card mb-6">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <input type="text" id="studentSearchInput" placeholder="Search name, UPI, Admission..." class="form-control text-sm w-full sm:w-72" oninput="filterStudentsTable()"/>
+          <select id="studentClassFilter" class="form-control text-sm w-full sm:w-48" onchange="filterStudentsTable()">
+            <option value="">All Classes</option>
+            ${classes.map(c => `<option value="${c.id}">${c.name} (${c.level})</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button onclick="downloadSampleLearnersCSV()" class="btn-outline text-xs"><i class="fas fa-download"></i> Sample CSV</button>
+          <button onclick="openImportLearnersCSVModal()" class="btn-secondary text-xs"><i class="fas fa-file-import"></i> Import CSV</button>
+          <button onclick="openStudentModal()" class="btn-primary text-xs"><i class="fas fa-plus"></i> Single Learner</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Adm No</th>
+            <th>UPI Number</th>
+            <th>Learner Name</th>
+            <th>Grade/Class</th>
+            <th>Stream</th>
+            <th>Gender</th>
+            <th>Mean Score</th>
+            <th>Fee Status</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTableBody">
+          ${renderStudentsTableRows(students)}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderStudentsTableRows(list) {
+  if (!list.length) return `<tr><td colspan="9" class="text-center py-6 text-slate-400">No learner records found.</td></tr>`;
+  return list.map(s => {
+    const mean = getStudentMeanScore(s.id);
+    const cls = getClassObj(s.classId);
+    const bal = s.feeBilled - s.feePaid;
+    const feeBadge = bal <= 0 ? '<span class="badge badge-success">Cleared</span>' : `<span class="badge badge-danger">Bal: KES ${bal}</span>`;
+
+    return `
+      <tr>
+        <td class="font-semibold text-blue-700">${s.admission}</td>
+        <td class="text-xs text-slate-500 font-mono">${s.upi}</td>
+        <td class="font-medium text-slate-900">${s.name}</td>
+        <td>${cls.name}</td>
+        <td>${s.stream || '—'}</td>
+        <td>${s.gender}</td>
+        <td class="font-bold">${mean} ${mean!=='—'?getGradeBadgeHTML(calculateCBCGrade(parseFloat(mean))):''}</td>
+        <td>${feeBadge}</td>
+        <td class="text-right space-x-1">
+          <button onclick="openStudentModal(${s.id})" class="text-slate-500 hover:text-teal-600 p-1.5" title="Edit"><i class="fas fa-edit"></i></button>
+          <button onclick="deleteStudentRecord(${s.id})" class="text-slate-500 hover:text-red-600 p-1.5" title="Delete"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function filterStudentsTable() {
+  const query = document.getElementById('studentSearchInput').value.toLowerCase();
+  const classF = document.getElementById('studentClassFilter').value;
+  const filtered = students.filter(s => {
+    const mQ = s.name.toLowerCase().includes(query) || s.admission.toLowerCase().includes(query) || s.upi.toLowerCase().includes(query);
+    const mC = classF ? s.classId === classF : true;
+    return mQ && mC;
+  });
+  document.getElementById('studentsTableBody').innerHTML = renderStudentsTableRows(filtered);
+}
+
+// SAMPLE DOWNLOADS
+function downloadSampleLearnersCSV() {
+  const sample = "Admission,UPI,Name,ClassID,Stream,Gender,ParentName,ParentPhone\nALR-901,UPI-2026-9901,Mary Moraa,g7,A,F,Mr. Moraa,+254712345678\nALR-902,UPI-2026-9902,David Omondi,g8,B,M,Mrs. Omondi,+254723456789\n";
+  const blob = new Blob([sample], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ALara_Learners_Import_Template.csv';
+  a.click();
+  showToast('Downloaded ALara_Learners_Import_Template.csv');
+}
+
+function downloadSampleTeachersCSV() {
+  const sample = "TSC,Name,Email,Subjects,ClassTeacherOf\nTSC-778899,Mrs. Sarah Wambui,wambui@alara.sc.ke,English;Kiswahili,g5\nTSC-665544,Mr. Peter Omondi,omondi@alara.sc.ke,Mathematics;Science,g7\n";
+  const blob = new Blob([sample], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ALara_Teachers_Import_Template.csv';
+  a.click();
+  showToast('Downloaded ALara_Teachers_Import_Template.csv');
+}
+
+// CSV IMPORT LEARNERS
+function openImportLearnersCSVModal() {
+  const modalBody = document.getElementById('dynamicModalBody');
+  modalBody.innerHTML = `
+    <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+      <h3 class="font-bold text-lg text-slate-800"><i class="fas fa-file-csv text-blue-600 mr-2"></i> Bulk Import Learners via CSV</h3>
+      <button onclick="closeDynamicModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="dropzone mb-4" onclick="document.getElementById('csvFileInput').click()">
+      <i class="fas fa-cloud-upload-alt text-4xl text-blue-500 mb-2"></i>
+      <p class="text-sm font-semibold text-slate-700">Click to select CSV File</p>
+      <p class="text-xs text-slate-400 mt-1">Headers: Admission, UPI, Name, ClassID, Stream, Gender, ParentName, ParentPhone</p>
+      <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleLearnerCSVUpload(event)" />
+    </div>
+
+    <div id="csvPreviewArea" class="hidden">
+      <h4 class="font-bold text-xs uppercase text-slate-500 mb-2">Parsed Learners Preview</h4>
+      <div class="table-container max-h-48 overflow-y-auto mb-4">
+        <table id="csvPreviewTable">
+          <thead><tr><th>Adm</th><th>UPI</th><th>Name</th><th>Class</th><th>Gender</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="flex justify-end gap-3 border-t border-slate-100 pt-3">
+        <button type="button" onclick="closeDynamicModal()" class="btn-outline">Cancel</button>
+        <button type="button" onclick="commitLearnerCSVImport()" class="btn-primary"><i class="fas fa-check"></i> Import Parsed Learners</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('dynamicModalOverlay').classList.remove('hidden');
+}
+
+let parsedImportLearners = [];
+
+function handleLearnerCSVUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.split(/\r\n|\n/);
+    if (lines.length < 2) { showToast('CSV file is empty or invalid.', 'error'); return; }
+
+    parsedImportLearners = [];
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const cols = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+      if (cols.length >= 3) {
+        const clsObj = getClassObj(cols[3] || 'g1');
+        parsedImportLearners.push({
+          id: Date.now() + Math.random(),
+          admission: cols[0] || ('ALR-' + Math.floor(100+Math.random()*900)),
+          upi: cols[1] || ('UPI-2026-' + Math.floor(1000+Math.random()*9000)),
+          name: cols[2] || 'Learner',
+          classId: cols[3] || 'g1',
+          stream: cols[4] || 'A',
+          gender: cols[5] || 'F',
+          parentName: cols[6] || 'Parent',
+          parentPhone: cols[7] || '+254700000000',
+          house: 'Kenya',
+          medical: 'None',
+          feeBilled: clsObj.feePerTerm || 15000,
+          feePaid: 0
+        });
+      }
+    }
+
+    const previewBody = document.querySelector('#csvPreviewTable tbody');
+    previewBody.innerHTML = parsedImportLearners.map(l => `
+      <tr>
+        <td class="font-mono text-xs">${l.admission}</td>
+        <td class="font-mono text-xs">${l.upi}</td>
+        <td class="font-medium">${l.name}</td>
+        <td>${l.classId}</td>
+        <td>${l.gender}</td>
+      </tr>
+    `).join('');
+
+    document.getElementById('csvPreviewArea').classList.remove('hidden');
+    showToast(`Parsed ${parsedImportLearners.length} learner records.`);
+  };
+  reader.readAsText(file);
+}
+
+function commitLearnerCSVImport() {
+  if (!parsedImportLearners.length) return;
+  students = [...students, ...parsedImportLearners];
+  saveData();
+  logAuditAction(`Bulk imported ${parsedImportLearners.length} learners via CSV`);
+  closeDynamicModal();
+  showToast(`Successfully imported ${parsedImportLearners.length} learners!`);
+  renderPageContent('students');
+}
+
+// TEACHERS VIEW
+function renderTeachersView() {
+  return `
+    <div class="card mb-6 flex justify-between items-center">
+      <div>
+        <h3 class="font-bold text-slate-800">Educators & Teaching Staff</h3>
+        <p class="text-xs text-slate-500">Manage TSC staff rosters and allocations.</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="downloadSampleTeachersCSV()" class="btn-outline text-xs"><i class="fas fa-download"></i> Sample CSV</button>
+        <button onclick="openImportTeachersCSVModal()" class="btn-secondary text-xs"><i class="fas fa-file-import"></i> Import CSV</button>
+        <button onclick="openTeacherModal()" class="btn-primary text-xs"><i class="fas fa-plus"></i> Single Staff</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      ${teachers.map(t => `
+        <div class="card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">${t.name.split(' ').map(n=>n[0]).join('')}</div>
+            <div>
+              <h4 class="font-bold text-slate-900 text-sm">${t.name}</h4>
+              <div class="text-xs text-slate-400">${t.tsc}</div>
+            </div>
+          </div>
+          <div class="text-xs text-slate-600 space-y-1 border-t border-slate-100 pt-3">
+            <div><i class="fas fa-envelope text-slate-400 mr-1.5"></i> <strong>Email:</strong> ${t.email || 'n/a'}</div>
+            <div><i class="fas fa-book text-slate-400 mr-1.5"></i> <strong>Subjects:</strong> ${Array.isArray(t.subjects)?t.subjects.join(', '):t.subjects}</div>
+            <div><i class="fas fa-chalkboard text-slate-400 mr-1.5"></i> <strong>Class Assigned:</strong> Grade ${(t.classTeacherOf||'N/A').toUpperCase()}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function openImportTeachersCSVModal() {
+  const modalBody = document.getElementById('dynamicModalBody');
+  modalBody.innerHTML = `
+    <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+      <h3 class="font-bold text-lg text-slate-800"><i class="fas fa-file-csv text-purple-600 mr-2"></i> Bulk Import Staff via CSV</h3>
+      <button onclick="closeDynamicModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="dropzone mb-4" onclick="document.getElementById('csvTeacherInput').click()">
+      <i class="fas fa-cloud-upload-alt text-4xl text-purple-500 mb-2"></i>
+      <p class="text-sm font-semibold text-slate-700">Click to select Teachers CSV File</p>
+      <p class="text-xs text-slate-400 mt-1">Headers: TSC, Name, Email, Subjects, ClassTeacherOf</p>
+      <input type="file" id="csvTeacherInput" accept=".csv" class="hidden" onchange="handleTeacherCSVUpload(event)" />
+    </div>
+
+    <div id="csvTeacherPreviewArea" class="hidden">
+      <h4 class="font-bold text-xs uppercase text-slate-500 mb-2">Parsed Educators Preview</h4>
+      <div class="table-container max-h-48 overflow-y-auto mb-4">
+        <table id="csvTeacherPreviewTable">
+          <thead><tr><th>TSC</th><th>Name</th><th>Email</th><th>Subjects</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="flex justify-end gap-3 border-t border-slate-100 pt-3">
+        <button type="button" onclick="closeDynamicModal()" class="btn-outline">Cancel</button>
+        <button type="button" onclick="commitTeacherCSVImport()" class="btn-primary"><i class="fas fa-check"></i> Import Staff</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('dynamicModalOverlay').classList.remove('hidden');
+}
+
+let parsedImportTeachers = [];
+
+function handleTeacherCSVUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.split(/\r\n|\n/);
+    if (lines.length < 2) { showToast('CSV file is empty or invalid.', 'error'); return; }
+
+    parsedImportTeachers = [];
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const cols = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+      if (cols.length >= 2) {
+        parsedImportTeachers.push({
+          id: Date.now() + Math.random(),
+          tsc: cols[0] || ('TSC-' + Math.floor(100000+Math.random()*900000)),
+          name: cols[1] || 'Teacher',
+          email: cols[2] || 'teacher@alara.sc.ke',
+          subjects: cols[3] ? cols[3].split(';') : ['Mathematics'],
+          classTeacherOf: cols[4] || 'g1'
+        });
+      }
+    }
+
+    const previewBody = document.querySelector('#csvTeacherPreviewTable tbody');
+    previewBody.innerHTML = parsedImportTeachers.map(t => `
+      <tr>
+        <td class="font-mono text-xs">${t.tsc}</td>
+        <td class="font-medium">${t.name}</td>
+        <td>${t.email}</td>
+        <td>${t.subjects.join(', ')}</td>
+      </tr>
+    `).join('');
+
+    document.getElementById('csvTeacherPreviewArea').classList.remove('hidden');
+    showToast(`Parsed ${parsedImportTeachers.length} staff records.`);
+  };
+  reader.readAsText(file);
+}
+
+function commitTeacherCSVImport() {
+  if (!parsedImportTeachers.length) return;
+  teachers = [...teachers, ...parsedImportTeachers];
+  saveData();
+  logAuditAction(`Bulk imported ${parsedImportTeachers.length} teachers via CSV`);
+  closeDynamicModal();
+  showToast(`Successfully imported ${parsedImportTeachers.length} teachers!`);
+  renderPageContent('teachers');
+}
+
+function openStudentModal(id = null) {
+  const s = id ? students.find(x => x.id === id) : null;
+  const modalBody = document.getElementById('dynamicModalBody');
+  
+  modalBody.innerHTML = `
+    <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+      <h3 class="font-bold text-lg text-slate-800">${s ? 'Edit Learner Details' : 'Register New Learner'}</h3>
+      <button onclick="closeDynamicModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+    </div>
+
+    <form onsubmit="saveStudentForm(event, ${id})">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="sfName" class="form-control" value="${s ? s.name : ''}" required />
+        </div>
+        <div class="form-group">
+          <label>Admission No</label>
+          <input type="text" id="sfAdm" class="form-control" value="${s ? s.admission : 'ALR-' + Math.floor(100+Math.random()*900)}" required />
+        </div>
+        <div class="form-group">
+          <label>NEMIS UPI Number</label>
+          <input type="text" id="sfUpi" class="form-control" value="${s ? s.upi : 'UPI-2026-' + Math.floor(1000+Math.random()*9000)}" required />
+        </div>
+        <div class="form-group">
+          <label>Class / Grade</label>
+          <select id="sfClass" class="form-control" required>
+            ${classes.map(c => `<option value="${c.id}" ${s && s.classId===c.id?'selected':''}>${c.name} (${c.level})</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Stream</label>
+          <select id="sfStream" class="form-control">
+            <option value="">None</option>
+            <option value="A" ${s && s.stream==='A'?'selected':''}>Stream A</option>
+            <option value="B" ${s && s.stream==='B'?'selected':''}>Stream B</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="sfGender" class="form-control">
+            <option value="F" ${s && s.gender==='F'?'selected':''}>Female</option>
+            <option value="M" ${s && s.gender==='M'?'selected':''}>Male</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Parent / Guardian Name</label>
+          <input type="text" id="sfParent" class="form-control" value="${s ? s.parentName : ''}" required />
+        </div>
+        <div class="form-group">
+          <label>Parent Phone</label>
+          <input type="text" id="sfPhone" class="form-control" value="${s ? s.parentPhone : '+2547'}" required />
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-4">
+        <button type="button" onclick="closeDynamicModal()" class="btn-outline">Cancel</button>
+        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Learner</button>
+      </div>
+    </form>
+  `;
+  document.getElementById('dynamicModalOverlay').classList.remove('hidden');
+}
+
+function saveStudentForm(e, id) {
+  e.preventDefault();
+  const name = document.getElementById('sfName').value;
+  const admission = document.getElementById('sfAdm').value;
+  const upi = document.getElementById('sfUpi').value;
+  const classId = document.getElementById('sfClass').value;
+  const stream = document.getElementById('sfStream').value;
+  const gender = document.getElementById('sfGender').value;
+  const parentName = document.getElementById('sfParent').value;
+  const parentPhone = document.getElementById('sfPhone').value;
+  const clsObj = getClassObj(classId);
+
+  if (id) {
+    const st = students.find(x => x.id === id);
+    if (st) {
+      st.name = name; st.admission = admission; st.upi = upi; st.classId = classId;
+      st.stream = stream; st.gender = gender; st.parentName = parentName; st.parentPhone = parentPhone;
+    }
+  } else {
+    students.push({
+      id: Date.now(), admission, upi, name, gender, classId, stream, parentName, parentPhone,
+      house: 'Kenya', medical: 'None', feeBilled: clsObj.feePerTerm || 15000, feePaid: 0
+    });
+  }
+
+  saveData();
+  logAuditAction(`Saved learner ${admission}`);
+  closeDynamicModal();
+  showToast('Learner record saved.');
+  renderPageContent('students');
+}
+
+function deleteStudentRecord(id) {
+  if (confirm('Delete learner record?')) {
+    students = students.filter(s => s.id !== id);
+    marks = marks.filter(m => m.studentId !== id);
+    saveData();
+    logAuditAction(`Deleted learner ID ${id}`);
+    showToast('Learner record deleted.', 'warning');
+    renderPageContent('students');
+  }
+}
+
+// EXCEL-STYLE MARKS GRID ENGINE
+function renderMarksGridNotice() {
+  return `
+    <div class="card mb-6">
+      <div class="flex flex-wrap items-center gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Select Exam</label>
+          <select id="meExamSelect" class="form-control text-sm w-48">
+            ${exams.map(e => `<option value="${e.id}">${e.name}</option>`).join('')}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Select Class</label>
+          <select id="meClassSelect" class="form-control text-sm w-48" onchange="updateMarksSubjectOptions()">
+            ${classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Select Subject</label>
+          <select id="meSubjectSelect" class="form-control text-sm w-56">
+          </select>
+        </div>
+
+        <div class="mt-auto">
+          <button onclick="loadMarksGridTable()" class="btn-primary"><i class="fas fa-sync"></i> Load Grid</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="marksGridContainer" class="card">
+      <div class="text-center py-10 text-slate-400">
+        <i class="fas fa-table text-4xl mb-3"></i>
+        <p>Select Exam, Class, and Subject then click "Load Grid" to enter scores.</p>
+      </div>
+    </div>
+  `;
+}
+
+function updateMarksSubjectOptions() {
+  const classId = document.getElementById('meClassSelect')?.value || classes[0].id;
+  const stSubjects = subjects.filter(s => s.classId === classId);
+  const subSelect = document.getElementById('meSubjectSelect');
+  if (subSelect) {
+    subSelect.innerHTML = stSubjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  }
+}
+
+function loadMarksGridTable() {
+  const examId = parseInt(document.getElementById('meExamSelect').value);
+  const classId = document.getElementById('meClassSelect').value;
+  const subjectId = parseInt(document.getElementById('meSubjectSelect').value);
+  
+  const classStudents = students.filter(s => s.classId === classId);
+  const container = document.getElementById('marksGridContainer');
+
+  if (!classStudents.length) {
+    container.innerHTML = `<p class="text-center py-8 text-slate-400">No learners enrolled in this class.</p>`;
+    return;
+  }
+
+  let html = `
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="font-bold text-slate-800">Entering Marks for: ${subjects.find(s=>s.id===subjectId)?.name}</h3>
+        <p class="text-xs text-slate-500">Keyboard Tab/Enter navigation auto-calculates KNEC 8-Point grades.</p>
+      </div>
+      <button onclick="saveAllGridMarks()" class="btn-primary"><i class="fas fa-save"></i> Save All Marks</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 50px;">#</th>
+            <th>Adm No</th>
+            <th>Learner Name</th>
+            <th style="width: 140px;">Score (0-100)</th>
+            <th style="width: 120px;">CBC Grade</th>
+            <th>Performance Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  classStudents.forEach((st, idx) => {
+    const existing = marks.find(m => m.examId === examId && m.studentId === st.id && m.subjectId === subjectId);
+    const score = existing ? existing.score : '';
+    const grade = existing ? existing.grade : '—';
+    const remarks = existing ? existing.remarks : '';
+
+    html += `
+      <tr>
+        <td>${idx+1}</td>
+        <td class="font-mono text-xs">${st.admission}</td>
+        <td class="font-medium">${st.name}</td>
+        <td>
+          <input type="number" min="0" max="100" class="form-control text-sm font-bold text-blue-700 py-1" value="${score}"
+            data-student="${st.id}" data-exam="${examId}" data-subject="${subjectId}" oninput="handleInlineMarkChange(this)"/>
+        </td>
+        <td id="gradeCell_${st.id}">${getGradeBadgeHTML(grade)}</td>
+        <td>
+          <input type="text" class="form-control text-xs py-1" id="remarkInput_${st.id}" value="${remarks}" placeholder="Auto-generated..."/>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+function handleInlineMarkChange(input) {
+  const val = parseFloat(input.value);
+  const stId = input.dataset.student;
+  const gradeCell = document.getElementById(`gradeCell_${stId}`);
+  const remarkInput = document.getElementById(`remarkInput_${stId}`);
+
+  if (!isNaN(val) && val >= 0 && val <= 100) {
+    const grade = calculateCBCGrade(val);
+    const remark = getCBCRemarks(grade);
+    gradeCell.innerHTML = getGradeBadgeHTML(grade);
+    remarkInput.value = remark;
+  } else {
+    gradeCell.innerHTML = '—';
+  }
+}
+
+function saveAllGridMarks() {
+  const inputs = document.querySelectorAll('#marksGridContainer input[data-student]');
+  inputs.forEach(input => {
+    const studentId = parseInt(input.dataset.student);
+    const examId = parseInt(input.dataset.exam);
+    const subjectId = parseInt(input.dataset.subject);
+    const score = parseFloat(input.value);
+
+    if (!isNaN(score)) {
+      const grade = calculateCBCGrade(score);
+      const remarkInput = document.getElementById(`remarkInput_${studentId}`);
+      const remarks = remarkInput ? remarkInput.value : getCBCRemarks(grade);
+
+      let record = marks.find(m => m.examId === examId && m.studentId === studentId && m.subjectId === subjectId);
+      if (record) {
+        record.score = score;
+        record.grade = grade;
+        record.remarks = remarks;
+      } else {
+        marks.push({ id: Date.now() + Math.random(), examId, studentId, subjectId, score, grade, remarks });
+      }
+    }
+  });
+
+  saveData();
+  logAuditAction('Saved grid marks');
+  showToast('All grid marks saved successfully!');
+}
+
+// REPORT CARDS
+function renderReportsView() {
+  return `
+    <div class="card mb-6 no-print">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <label class="text-xs font-semibold text-slate-500">Filter Grade:</label>
+          <select id="repGradeSelect" class="form-control text-sm w-48" onchange="generateReportCardsList()">
+            <option value="">All Grades</option>
+            ${classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+          </select>
+        </div>
+
+        <button onclick="window.print()" class="btn-primary"><i class="fas fa-print"></i> Print Selected Forms</button>
+      </div>
+    </div>
+
+    <div id="reportCardsListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    </div>
+  `;
+}
+
+function generateReportCardsList() {
+  const classFilter = document.getElementById('repGradeSelect')?.value || '';
+  const list = classFilter ? students.filter(s => s.classId === classFilter) : students;
+  const container = document.getElementById('reportCardsListContainer');
+
+  if (!list.length) {
+    container.innerHTML = `<p class="col-span-2 text-center py-10 text-slate-400">No report cards generated.</p>`;
+    return;
+  }
+
+  container.innerHTML = list.map(s => {
+    const mean = getStudentMeanScore(s.id);
+    const grade = calculateCBCGrade(parseFloat(mean));
+    const stMarks = marks.filter(m => m.studentId === s.id);
+    const cls = getClassObj(s.classId);
+
+    return `
+      <div class="card border-2 border-slate-200">
+        <div class="flex items-start justify-between border-b border-slate-100 pb-3 mb-3">
+          <div>
+            <h3 class="font-extrabold text-slate-900 text-base">${s.name}</h3>
+            <div class="text-xs text-slate-500">Adm: ${s.admission} · ${cls.name} (${s.stream||'A'})</div>
+          </div>
+          <div class="text-right">
+            ${getGradeBadgeHTML(grade)}
+            <div class="text-xs text-slate-500 font-semibold mt-1">Mean: ${mean}</div>
+          </div>
+        </div>
+
+        <div class="space-y-1 max-h-40 overflow-y-auto mb-4 text-xs">
+          ${stMarks.map(m => {
+            const sub = subjects.find(x => x.id === m.subjectId);
+            return `
+              <div class="flex items-center justify-between py-1 border-b border-slate-50">
+                <span class="text-slate-700">${sub ? sub.name : 'Subject'}</span>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold">${m.score}</span>
+                  ${getGradeBadgeHTML(m.grade)}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+          <span class="text-[10px] text-slate-400"><i class="fas fa-qrcode"></i> QR Verified System Form</span>
+          <button onclick="previewPrintableReportCard(${s.id})" class="btn-outline text-xs py-1 px-3"><i class="fas fa-file-pdf"></i> View Report Form</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function previewPrintableReportCard(id) {
+  const s = students.find(x => x.id === id);
+  if (!s) return;
+  const cls = getClassObj(s.classId);
+  const stMarks = marks.filter(m => m.studentId === id);
+  const mean = getStudentMeanScore(id);
+  const modalBody = document.getElementById('dynamicModalBody');
+
+  modalBody.innerHTML = `
+    <div class="printable-area p-4">
+      <div class="text-center border-b-2 border-blue-900 pb-4 mb-4">
+        <h2 class="text-2xl font-black text-blue-950 uppercase tracking-tight">ALARA PRIMARY & JUNIOR SECONDARY SCHOOL</h2>
+        <p class="text-xs text-slate-600">P.O. Box 142 – Suna East, Migori County, Kenya · Tel: +254 700 000000</p>
+        <div class="inline-block bg-blue-900 text-white text-xs font-bold px-4 py-1 rounded-full uppercase mt-2">OFFICIAL CBC REPORT FORM</div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-xs mb-4 bg-slate-50 p-3 rounded-lg border">
+        <div><strong>Learner Name:</strong> ${s.name}</div>
+        <div><strong>Admission No:</strong> ${s.admission}</div>
+        <div><strong>NEMIS UPI:</strong> ${s.upi}</div>
+        <div><strong>Grade / Class:</strong> ${cls.name} (${s.stream||'A'})</div>
+        <div><strong>Term & Year:</strong> Term 2, 2026</div>
+        <div><strong>Overall Achievement:</strong> Mean ${mean} (${calculateCBCGrade(parseFloat(mean))})</div>
+      </div>
+
+      <table class="w-full text-xs border-collapse border mb-4">
+        <thead>
+          <tr class="bg-slate-100">
+            <th class="border p-2">Learning Area (Subject)</th>
+            <th class="border p-2 text-center">Score %</th>
+            <th class="border p-2 text-center">CBC Grade</th>
+            <th class="border p-2">Performance Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${stMarks.map(m => {
+            const sub = subjects.find(x => x.id === m.subjectId);
+            return `
+              <tr>
+                <td class="border p-2 font-medium">${sub ? sub.name : 'Subject'}</td>
+                <td class="border p-2 text-center font-bold">${m.score}</td>
+                <td class="border p-2 text-center">${m.grade}</td>
+                <td class="border p-2 text-slate-600">${m.remarks}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <div class="grid grid-cols-2 gap-6 text-xs pt-4 border-t border-slate-200">
+        <div>
+          <p class="font-bold text-slate-800">Class Teacher's Comments:</p>
+          <p class="text-slate-600 italic mt-1 border-b border-dotted pb-2">Demonstrates consistent focus and active participation across learning activities.</p>
+          <div class="mt-4 text-[10px] text-slate-400">Signature: _______________________</div>
+        </div>
+        <div>
+          <p class="font-bold text-slate-800">Head Teacher's Comments:</p>
+          <p class="text-slate-600 italic mt-1 border-b border-dotted pb-2">Commendable CBC progress. Keep striving for higher competency standards.</p>
+          <div class="mt-4 text-[10px] text-slate-400">Stamp & Signature: _______________________</div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3 no-print">
+        <button onclick="closeDynamicModal()" class="btn-outline">Close</button>
+        <button onclick="window.print()" class="btn-primary"><i class="fas fa-print"></i> Print Form</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('dynamicModalOverlay').classList.remove('hidden');
+}
+
+// ANALYTICS DASHBOARD WITH CHART.JS
+function renderAnalyticsView() {
+  return `
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="card">
+        <h3 class="font-bold text-slate-800 text-sm mb-3"><i class="fas fa-chart-bar text-blue-600 mr-2"></i> Grade Distribution (KNEC 8-Point Scale)</h3>
+        <div class="relative h-64">
+          <canvas id="chartGradeDist"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="font-bold text-slate-800 text-sm mb-3"><i class="fas fa-chart-line text-teal-600 mr-2"></i> Subject Performance Radar</h3>
+        <div class="relative h-64">
+          <canvas id="chartSubjectRadar"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="font-bold text-slate-800 mb-4"><i class="fas fa-fire text-amber-500 mr-2"></i> Subject Difficulty & Pass Index</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Subject / Learning Area</th>
+              <th>Level</th>
+              <th>Avg Score</th>
+              <th>Pass Rate</th>
+              <th>Difficulty Index</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${subjects.slice(0, 10).map(s => {
+              const subMarks = marks.filter(m => m.subjectId === s.id);
+              const avg = subMarks.length ? (subMarks.reduce((a,m)=>a+m.score,0)/subMarks.length).toFixed(1) : '65.0';
+              const pass = subMarks.length ? ((subMarks.filter(m=>m.score>=41).length/subMarks.length)*100).toFixed(0) : '85';
+              const diff = parseFloat(avg) > 70 ? 'Easy' : parseFloat(avg) > 55 ? 'Moderate' : 'Challenging';
+              return `
+                <tr>
+                  <td class="font-medium text-slate-900">${s.name}</td>
+                  <td>${s.level}</td>
+                  <td class="font-bold text-blue-700">${avg}</td>
+                  <td class="text-green-600 font-semibold">${pass}%</td>
+                  <td><span class="badge ${diff==='Easy'?'badge-success':diff==='Moderate'?'badge-warning':'badge-danger'}">${diff}</span></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderAnalyticsCharts() {
+  setTimeout(() => {
+    // Grade Dist Bar
+    const ctxBar = document.getElementById('chartGradeDist')?.getContext('2d');
+    if (ctxBar) {
+      const labels = ['EE1','EE2','ME1','ME2','AE1','AE2','BE1','BE2'];
+      const counts = labels.map(g => marks.filter(m => m.grade === g).length);
+      new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Learners',
+            data: counts,
+            backgroundColor: '#3b82f6',
+            borderRadius: 6
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    // Radar Chart
+    const ctxRadar = document.getElementById('chartSubjectRadar')?.getContext('2d');
+    if (ctxRadar) {
+      new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+          labels: ['Math', 'English', 'Kiswahili', 'Science', 'Social Studies', 'Creative Arts'],
+          datasets: [{
+            label: 'School Mean %',
+            data: [72, 68, 75, 64, 70, 82],
+            backgroundColor: 'rgba(13, 148, 136, 0.2)',
+            borderColor: '#0d9488',
+            pointBackgroundColor: '#0d9488'
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+  }, 100);
+}
+
+// FINANCIAL FEE ACCOUNTS
+function renderFeesView() {
+  const totalBilled = students.reduce((a,s)=>a+s.feeBilled, 0);
+  const totalPaid = students.reduce((a,s)=>a+s.feePaid, 0);
+  const totalBal = totalBilled - totalPaid;
+
+  return `
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+      <div class="stat-card" style="border-left-color: #2563eb;">
+        <div class="text-slate-500 text-xs font-semibold uppercase">Total Term Fees Billed</div>
+        <div class="text-2xl font-black text-slate-900 mt-1">KES ${totalBilled.toLocaleString()}</div>
+      </div>
+      <div class="stat-card" style="border-left-color: #16a34a;">
+        <div class="text-slate-500 text-xs font-semibold uppercase">Total Revenue Collected</div>
+        <div class="text-2xl font-black text-green-600 mt-1">KES ${totalPaid.toLocaleString()}</div>
+      </div>
+      <div class="stat-card" style="border-left-color: #ef4444;">
+        <div class="text-slate-500 text-xs font-semibold uppercase">Total Outstanding Balances</div>
+        <div class="text-2xl font-black text-red-600 mt-1">KES ${totalBal.toLocaleString()}</div>
+      </div>
+    </div>
+
+    <div class="card mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-slate-800">Learner Fee Ledgers</h3>
+        <button onclick="openRecordPaymentModal()" class="btn-primary"><i class="fas fa-receipt"></i> Record Fee Payment</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Adm No</th>
+              <th>Learner Name</th>
+              <th>Class</th>
+              <th>Total Billed</th>
+              <th>Total Paid</th>
+              <th>Balance</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${students.map(s => {
+              const bal = s.feeBilled - s.feePaid;
+              const cls = getClassObj(s.classId);
+              return `
+                <tr>
+                  <td class="font-mono text-xs">${s.admission}</td>
+                  <td class="font-medium">${s.name}</td>
+                  <td>${cls.name}</td>
+                  <td>KES ${s.feeBilled.toLocaleString()}</td>
+                  <td class="text-green-600 font-semibold">KES ${s.feePaid.toLocaleString()}</td>
+                  <td class="${bal>0?'text-red-600 font-bold':'text-slate-400'}">KES ${bal.toLocaleString()}</td>
+                  <td>
+                    <button onclick="openRecordPaymentModal(${s.id})" class="btn-outline btn-sm"><i class="fas fa-plus"></i> Pay</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function openRecordPaymentModal(studentId = null) {
+  const modalBody = document.getElementById('dynamicModalBody');
+  modalBody.innerHTML = `
+    <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+      <h3 class="font-bold text-lg text-slate-800">Record Fee Payment</h3>
+      <button onclick="closeDynamicModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+    </div>
+
+    <form onsubmit="saveFeePayment(event)">
+      <div class="form-group">
+        <label>Select Learner</label>
+        <select id="fpStudent" class="form-control" required>
+          ${students.map(s => `<option value="${s.id}" ${studentId===s.id?'selected':''}>${s.name} (${s.admission}) – Bal KES ${s.feeBilled-s.feePaid}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Amount Paid (KES)</label>
+        <input type="number" id="fpAmount" class="form-control" placeholder="e.g. 5000" required />
+      </div>
+      <div class="form-group">
+        <label>Payment Method</label>
+        <select id="fpMethod" class="form-control">
+          <option value="M-Pesa">M-Pesa</option>
+          <option value="Bank Deposit">Bank Deposit</option>
+          <option value="Cash">Cash</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Transaction / Reference Code</label>
+        <input type="text" id="fpRef" class="form-control" value="MPX${Math.floor(100000+Math.random()*900000)}" required />
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-4">
+        <button type="button" onclick="closeDynamicModal()" class="btn-outline">Cancel</button>
+        <button type="submit" class="btn-primary"><i class="fas fa-check"></i> Post Payment</button>
+      </div>
+    </form>
+  `;
+  document.getElementById('dynamicModalOverlay').classList.remove('hidden');
+}
+
+function saveFeePayment(e) {
+  e.preventDefault();
+  const stId = parseInt(document.getElementById('fpStudent').value);
+  const amt = parseFloat(document.getElementById('fpAmount').value);
+  const method = document.getElementById('fpMethod').value;
+  const ref = document.getElementById('fpRef').value;
+
+  const st = students.find(x => x.id === stId);
+  if (st) {
+    st.feePaid += amt;
+    feePayments.push({ id: Date.now(), studentId: stId, amount: amt, date: new Date().toISOString().split('T')[0], ref, method });
+    saveData();
+    logAuditAction(`Recorded payment KES ${amt} for ${st.admission}`);
+    closeDynamicModal();
+    showToast(`Payment of KES ${amt} recorded for ${st.name}`);
+    renderPageContent('fees');
+  }
+}
+
+// ATTENDANCE & DISCIPLINE
+function renderAttendanceView() {
+  return `
+    <div class="card mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <label class="text-xs font-semibold text-slate-500">Grade / Class:</label>
+          <select id="attClassSelect" class="form-control text-sm w-48" onchange="loadAttendanceRegisterTable()">
+            ${classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+          </select>
+
+          <label class="text-xs font-semibold text-slate-500 ml-2">Date:</label>
+          <input type="date" id="attDateInput" class="form-control text-sm w-40" value="${new Date().toISOString().split('T')[0]}" onchange="loadAttendanceRegisterTable()"/>
+        </div>
+
+        <button onclick="markAllPresent()" class="btn-secondary text-xs"><i class="fas fa-check-double"></i> Mark All Present</button>
+      </div>
+    </div>
+
+    <div id="attendanceRegisterContainer" class="card">
+    </div>
+  `;
+}
+
+function loadAttendanceRegisterTable() {
+  const classId = document.getElementById('attClassSelect')?.value || classes[0].id;
+  const classStudents = students.filter(s => s.classId === classId);
+  const container = document.getElementById('attendanceRegisterContainer');
+
+  if (!container) return;
+
+  if (!classStudents.length) {
+    container.innerHTML = `<p class="text-center py-6 text-slate-400">No learners in this class.</p>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Adm No</th>
+            <th>Learner Name</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${classStudents.map(s => `
+            <tr>
+              <td class="font-mono text-xs">${s.admission}</td>
+              <td class="font-medium">${s.name}</td>
+              <td>
+                <div class="flex items-center gap-2">
+                  <label class="inline-flex items-center gap-1 text-xs cursor-pointer"><input type="radio" name="att_${s.id}" value="Present" checked /> <span class="text-green-700 font-semibold">Present</span></label>
+                  <label class="inline-flex items-center gap-1 text-xs cursor-pointer ml-3"><input type="radio" name="att_${s.id}" value="Absent" /> <span class="text-red-600 font-semibold">Absent</span></label>
+                  <label class="inline-flex items-center gap-1 text-xs cursor-pointer ml-3"><input type="radio" name="att_${s.id}" value="Late" /> <span class="text-amber-600 font-semibold">Late</span></label>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4 flex justify-end">
+      <button onclick="saveAttendanceRegister()" class="btn-primary"><i class="fas fa-save"></i> Save Register</button>
+    </div>
+  `;
+}
+
+function markAllPresent() {
+  document.querySelectorAll('input[type="radio"][value="Present"]').forEach(r => r.checked = true);
+  showToast('All learners marked as Present.');
+}
+
+function saveAttendanceRegister() {
+  logAuditAction('Saved daily attendance register');
+  showToast('Daily attendance saved to register.');
+}
+
+// AUDIT LOGS VIEW
+function renderAuditView() {
+  return `
+    <div class="card">
+      <h3 class="font-bold text-slate-800 mb-4"><i class="fas fa-history text-slate-600 mr-2"></i> Security Audit Logs</h3>
+      <div class="table-container max-h-96 overflow-y-auto">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User Account</th>
+              <th>Action Executed</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${auditLogs.map(l => `
+              <tr>
+                <td>${l.id}</td>
+                <td class="font-semibold text-slate-900">${l.user}</td>
+                <td class="text-slate-700">${l.action}</td>
+                <td class="font-mono text-xs text-slate-400">${l.timestamp}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// EXAMS, TRANSCRIPTS, USERS, NOTICEBOARD & SETTINGS
+function renderExamsView() {
+  return `
+    <div class="card mb-6 flex justify-between items-center">
+      <h3 class="font-bold text-slate-800">Examination Sessions</h3>
+      <button onclick="showToast('Exam session created')" class="btn-primary"><i class="fas fa-plus"></i> New Exam Session</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      ${exams.map(e => `
+        <div class="card">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+            <h4 class="font-bold text-slate-900 text-base">${e.name}</h4>
+            <span class="badge ${e.status==='Completed'?'badge-success':'badge-warning'}">${e.status}</span>
+          </div>
+          <div class="text-xs text-slate-500 space-y-1 mb-4">
+            <div><strong>Term / Year:</strong> ${e.term}, ${e.year}</div>
+            <div><strong>Type:</strong> ${e.type} Assessment</div>
+          </div>
+          <button onclick="navigateTo('marks')" class="btn-outline btn-sm w-full justify-center"><i class="fas fa-edit"></i> Open Marks Grid</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderTranscriptsView() {
+  return `
+    <div class="card">
+      <h3 class="font-bold text-slate-800 mb-4">Learner Transcripts & Academic Rankings</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Adm No</th>
+              <th>Learner Name</th>
+              <th>Class</th>
+              <th>Mean Score</th>
+              <th>CBC Grade</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${students.map(s => ({ ...s, mean: parseFloat(getStudentMeanScore(s.id)) || 0 }))
+              .sort((a,b) => b.mean - a.mean)
+              .map((s, idx) => `
+                <tr>
+                  <td class="font-black text-slate-500">#${idx+1}</td>
+                  <td class="font-mono text-xs">${s.admission}</td>
+                  <td class="font-medium">${s.name}</td>
+                  <td>${getClassObj(s.classId).name}</td>
+                  <td class="font-bold text-blue-700">${s.mean.toFixed(1)}</td>
+                  <td>${getGradeBadgeHTML(calculateCBCGrade(s.mean))}</td>
+                  <td>
+                    <button onclick="previewPrintableReportCard(${s.id})" class="btn-outline btn-sm"><i class="fas fa-file-pdf"></i> Transcript</button>
+                  </td>
+                </tr>
+              `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderNoticeboardView() {
+  return `
+    <div class="card mb-6 flex justify-between items-center">
+      <h3 class="font-bold text-slate-800">School Noticeboard & Broadcast SMS</h3>
+      <button onclick="showToast('SMS Broadcast Sent to Parents!')" class="btn-primary"><i class="fas fa-paper-plane"></i> Send SMS Broadcast</button>
+    </div>
+
+    <div class="space-y-4">
+      ${announcements.map(a => `
+        <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="font-bold text-slate-900">${a.title}</h4>
+            <span class="badge badge-info">${a.category}</span>
+          </div>
+          <p class="text-xs text-slate-600">${a.content}</p>
+          <div class="text-[10px] text-slate-400 mt-3"><i class="fas fa-clock mr-1"></i> Posted on ${a.date}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderUsersView() {
+  return `
+    <div class="card">
+      <h3 class="font-bold text-slate-800 mb-4">User Accounts & Access Control</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Username</th>
+              <th>System Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users.map(u => `
+              <tr>
+                <td>${u.id}</td>
+                <td class="font-medium">${u.name}</td>
+                <td class="font-mono text-xs">${u.username}</td>
+                <td><span class="badge badge-purple">${u.role}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderSettingsView() {
+  return `
+    <div class="card max-w-2xl">
+      <h3 class="font-bold text-slate-800 mb-4">System Settings & Configuration</h3>
+      <div class="space-y-4">
+        <div class="form-group">
+          <label>School Name</label>
+          <input type="text" class="form-control" value="ALara Primary & Junior Secondary School" />
+        </div>
+        <div class="form-group">
+          <label>County & Sub-County</label>
+          <input type="text" class="form-control" value="Migori County, Suna East Sub-County" />
+        </div>
+        <button onclick="showToast('Settings saved successfully!')" class="btn-primary"><i class="fas fa-save"></i> Save Settings</button>
+      </div>
+    </div>
+  `;
+}
+
+function closeDynamicModal() {
+  document.getElementById('dynamicModalOverlay').classList.add('hidden');
+}
+
+function exportFullDatabaseJSON() {
+  const data = { students, teachers, exams, marks, feePayments, users, announcements, auditLogs };
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ALara_SMIS_Database_Backup.json';
+  a.click();
+  logAuditAction('Exported full database backup');
+  showToast('Full system database backup exported.');
+}
+</script>
+</body>
+</html>

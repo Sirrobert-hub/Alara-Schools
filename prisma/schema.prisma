@@ -13,6 +13,7 @@ enum Role {
   DEPUTY
   CLASS_TEACHER
   SUBJECT_TEACHER
+  PARENT
 }
 
 enum Gender {
@@ -44,37 +45,47 @@ enum CommentType {
   PRINCIPAL
 }
 
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
 model User {
-  id           String   @id @default(cuid())
-  username     String   @unique
-  passwordHash String
-  name         String
-  role         Role
-  active       Boolean  @default(true)
-  teacherId    String?  @unique
-  teacher      Teacher? @relation(fields: [teacherId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  marksEntered Mark[]
-  auditLogs    AuditLog[]
-  comments     Comment[]
+  id                  String         @id @default(cuid())
+  username            String         @unique
+  passwordHash        String
+  name                String
+  role                Role
+  active              Boolean        @default(true)
+  teacherId           String?        @unique
+  teacher             Teacher?       @relation(fields: [teacherId], references: [id])
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  marksEntered        Mark[]
+  auditLogs           AuditLog[]
+  attendanceRecorded  Attendance[]
+  comments            Comment[]
+  feePaymentsRecorded FeePayment[]
+  announcements       Announcement[]
 }
 
 model SchoolSetting {
-  id             String  @id @default(cuid())
-  name           String
-  county         String
-  subCounty      String
-  country        String  @default("Kenya")
-  phone          String?
-  email          String?
-  address        String?
-  logoPath       String?
-  currentYearId  String?
-  currentTermId  String?
-  mission        String?
-  vision         String?
-  coreValues     String?
+  id            String  @id @default(cuid())
+  name          String
+  county        String
+  subCounty     String
+  country       String  @default("Kenya")
+  phone         String?
+  email         String?
+  address       String?
+  logoPath      String?
+  currentYearId String?
+  currentTermId String?
+  mission       String?
+  vision        String?
+  coreValues    String?
 }
 
 model AcademicYear {
@@ -95,6 +106,7 @@ model Term {
   academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
   active         Boolean       @default(false)
   examinations   Examination[]
+  attendance     Attendance[]
 
   @@unique([academicYearId, termNumber])
 }
@@ -103,6 +115,7 @@ model ClassLevel {
   id         String      @id @default(cuid())
   name       String      @unique
   orderIndex Int
+  feePerTerm Float       @default(15000)
   classrooms ClassRoom[]
 }
 
@@ -124,6 +137,7 @@ model ClassRoom {
   students       Student[]
   assignments    TeacherAssignment[]
   examinations   Examination[]
+  attendance     Attendance[]
 }
 
 model Subject {
@@ -136,18 +150,18 @@ model Subject {
 }
 
 model Teacher {
-  id           String              @id @default(cuid())
-  tscNumber    String              @unique
-  firstName    String
-  lastName     String
-  gender       Gender
-  phone        String?
-  email        String?
-  user         User?
-  classRooms   ClassRoom[]         @relation("ClassTeacher")
-  assignments  TeacherAssignment[]
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  id          String              @id @default(cuid())
+  tscNumber   String              @unique
+  firstName   String
+  lastName    String
+  gender      Gender
+  phone       String?
+  email       String?
+  user        User?
+  classRooms  ClassRoom[]         @relation("ClassTeacher")
+  assignments TeacherAssignment[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 }
 
 model TeacherAssignment {
@@ -163,9 +177,9 @@ model TeacherAssignment {
 }
 
 model Student {
-  id            String     @id @default(cuid())
-  admissionNo   String     @unique
-  upi           String?    @unique
+  id            String       @id @default(cuid())
+  admissionNo   String       @unique
+  upi           String?      @unique
   firstName     String
   lastName      String
   middleName    String?
@@ -179,13 +193,41 @@ model Student {
   house         String?
   medicalNotes  String?
   classroomId   String
-  classroom     ClassRoom  @relation(fields: [classroomId], references: [id])
-  active        Boolean    @default(true)
-  promoted      Boolean    @default(false)
+  classroom     ClassRoom    @relation(fields: [classroomId], references: [id])
+  active        Boolean      @default(true)
+  promoted      Boolean      @default(false)
   marks         Mark[]
   comments      Comment[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  attendance    Attendance[]
+  feePayments   FeePayment[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model FeePayment {
+  id            String   @id @default(cuid())
+  studentId     String
+  amount        Float
+  paymentDate   DateTime @default(now())
+  paymentMethod String   @default("M-Pesa")
+  referenceCode String
+  recordedById  String?
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  recordedBy    User?    @relation(fields: [recordedById], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime @default(now())
+  category  String   @default("Academic")
+  content   String
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Examination {
@@ -208,20 +250,20 @@ model Examination {
 }
 
 model Mark {
-  id          String      @id @default(cuid())
+  id            String      @id @default(cuid())
   examinationId String
-  studentId   String
-  subjectId   String
-  score       Float?
-  enteredById String?
-  submitted   Boolean     @default(false)
-  submittedAt DateTime?
-  examination Examination @relation(fields: [examinationId], references: [id], onDelete: Cascade)
-  student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  subject     Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  enteredBy   User?       @relation(fields: [enteredById], references: [id])
-  updatedAt   DateTime    @updatedAt
-  createdAt   DateTime    @default(now())
+  studentId     String
+  subjectId     String
+  score         Float?
+  enteredById   String?
+  submitted     Boolean     @default(false)
+  submittedAt   DateTime?
+  examination   Examination @relation(fields: [examinationId], references: [id], onDelete: Cascade)
+  student       Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject       Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  enteredBy     User?       @relation(fields: [enteredById], references: [id])
+  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime    @default(now())
 
   @@unique([examinationId, studentId, subjectId])
 }
@@ -240,6 +282,26 @@ model Comment {
   author        User        @relation(fields: [authorId], references: [id])
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+}
+
+model Attendance {
+  id           String           @id @default(cuid())
+  studentId    String
+  classroomId  String
+  termId       String
+  date         DateTime
+  status       AttendanceStatus
+  remarks      String?
+  recordedById String?
+  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classroom    ClassRoom        @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  term         Term             @relation(fields: [termId], references: [id])
+  recordedBy   User?            @relation(fields: [recordedById], references: [id])
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([studentId, date])
+  @@index([classroomId, date])
 }
 
 model AuditLog {

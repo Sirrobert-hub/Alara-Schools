@@ -5,6 +5,15 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useState } from "react";
 
+const DEMO_PERSONAS = [
+  { label: "Admin", username: "Admin", password: "Admin123", color: "bg-blue-600 text-white", desc: "System Administrator" },
+  { label: "Principal", username: "principal", password: "Admin123", color: "bg-violet-600 text-white", desc: "School Principal" },
+  { label: "Deputy", username: "deputy", password: "Admin123", color: "bg-indigo-600 text-white", desc: "Deputy Headteacher" },
+  { label: "Class Teacher", username: "aouma", password: "Admin123", color: "bg-teal-600 text-white", desc: "Grade 7A Teacher" },
+  { label: "Subject Teacher", username: "jochieng", password: "Admin123", color: "bg-emerald-600 text-white", desc: "Mathematics Teacher" },
+  { label: "Parent", username: "parent", password: "Admin123", color: "bg-amber-600 text-white", desc: "Parent / Guardian" },
+];
+
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -18,40 +27,69 @@ function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    const callbackUrl = `${window.location.origin}/app`;
     const res = await signIn("credentials", {
       username,
       password,
       redirect: false,
+      callbackUrl,
     });
     setLoading(false);
     if (res?.error) {
-      setError("Invalid username or password.");
+      setError("Invalid username or password. Please try again.");
       return;
     }
-    router.push(params.get("callbackUrl") || "/app");
+    router.push(res?.url ?? params.get("callbackUrl") ?? callbackUrl);
     router.refresh();
   }
 
+  const fillPersona = (u: string, p: string) => {
+    setUsername(u);
+    setPassword(p);
+    setError("");
+  };
+
   return (
     <div className="flex min-h-screen">
+      {/* Left panel */}
       <div className="hero-gradient relative hidden w-1/2 flex-col justify-between p-12 text-white lg:flex">
         <div>
           <Link href="/" className="font-display text-2xl font-bold">
             ALara<span className="text-amber-300">SMIS</span>
           </Link>
+          <p className="mt-1 text-xs text-blue-200/70 uppercase tracking-widest">v5.0 · PP1–Grade 9 CBC</p>
         </div>
         <div>
           <h1 className="font-display text-4xl font-bold leading-tight">
-            Academic Excellence Through Digital Intelligence
+            Academic Excellence<br />Through Digital Intelligence
           </h1>
           <p className="mt-4 max-w-md text-blue-100">
-            Secure access for administrators, principals, deputies, and teachers
-            at ALara Primary & Junior Secondary School, Suna East, Migori.
+            Secure, role-based access for all ALara Primary &amp; Junior Secondary School stakeholders — Suna East, Migori County, Kenya.
           </p>
+          {/* KNEC Scale preview */}
+          <div className="mt-8 grid grid-cols-4 gap-2">
+            {[
+              { band: "EE1", label: "90–100", color: "bg-emerald-500" },
+              { band: "EE2", label: "75–89", color: "bg-green-500" },
+              { band: "ME1", label: "58–74", color: "bg-blue-500" },
+              { band: "ME2", label: "41–57", color: "bg-sky-500" },
+              { band: "AE1", label: "31–40", color: "bg-amber-500" },
+              { band: "AE2", label: "21–30", color: "bg-orange-500" },
+              { band: "BE1", label: "11–20", color: "bg-rose-500" },
+              { band: "BE2", label: "0–10", color: "bg-red-700" },
+            ].map((g) => (
+              <div key={g.band} className="flex flex-col items-center rounded-lg bg-white/10 p-2 text-center backdrop-blur-sm">
+                <span className={`rounded-full ${g.color} px-2 py-0.5 text-xs font-black text-white`}>{g.band}</span>
+                <span className="mt-1 text-[10px] text-blue-100">{g.label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-blue-300/70">KNEC 8-Point CBC Achievement Scale</p>
         </div>
-        <p className="text-sm text-blue-200/80">CBC · KNEC · KICD aligned</p>
+        <p className="text-sm text-blue-200/60">CBC · KNEC · KICD aligned © {new Date().getFullYear()}</p>
       </div>
 
+      {/* Right panel */}
       <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8 lg:hidden">
@@ -59,12 +97,9 @@ function LoginForm() {
               ALara<span className="text-primary-light">SMIS</span>
             </Link>
           </div>
-          <h2 className="font-display text-3xl font-bold text-slate-900">
-            Sign in
-          </h2>
-          <p className="mt-2 text-slate-500">
-            Enter your credentials to access the school system.
-          </p>
+
+          <h2 className="font-display text-3xl font-bold text-slate-900">Sign in</h2>
+          <p className="mt-2 text-slate-500">Enter your credentials to access the school portal.</p>
 
           <form onSubmit={onSubmit} className="mt-8 space-y-5">
             {error && (
@@ -73,9 +108,7 @@ function LoginForm() {
               </div>
             )}
             <div>
-              <label className="label" htmlFor="username">
-                Username
-              </label>
+              <label className="label" htmlFor="username">Username</label>
               <input
                 id="username"
                 className="input"
@@ -86,9 +119,7 @@ function LoginForm() {
               />
             </div>
             <div>
-              <label className="label" htmlFor="password">
-                Password
-              </label>
+              <label className="label" htmlFor="password">Password</label>
               <input
                 id="password"
                 type="password"
@@ -108,29 +139,41 @@ function LoginForm() {
                 />
                 Remember me
               </label>
-              <span className="cursor-not-allowed text-slate-400" title="Coming soon">
+              <span className="cursor-not-allowed text-slate-400" title="Contact admin to reset password">
                 Forgot password?
               </span>
             </div>
             <button type="submit" className="btn-primary w-full" disabled={loading}>
-              {loading ? "Signing in…" : "Login"}
+              {loading ? "Signing in…" : "Login →"}
             </button>
           </form>
 
-          <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
-            <p className="mb-2 font-semibold text-slate-800">Demo accounts (password: Admin123)</p>
-            <ul className="space-y-1">
-              <li>Admin — System Administrator</li>
-              <li>principal — Principal</li>
-              <li>deputy — Deputy Headteacher</li>
-              <li>aouma — Class Teacher</li>
-              <li>jochieng / smwangi — Subject Teachers</li>
-            </ul>
+          {/* Quick Persona Logins */}
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <p className="mb-3 text-xs font-extrabold uppercase tracking-wider text-slate-500">
+              🎭 Quick Demo Login — All passwords: <span className="font-mono text-blue-700">Admin123</span>
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {DEMO_PERSONAS.map((p) => (
+                <button
+                  key={p.username}
+                  type="button"
+                  onClick={() => fillPersona(p.username, p.password)}
+                  title={`${p.desc} — @${p.username}`}
+                  className={`rounded-lg px-3 py-2 text-xs font-bold transition hover:opacity-90 active:scale-95 ${p.color}`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-3 text-center text-[10px] text-slate-400">
+              Click any role above to auto-fill credentials, then click Login
+            </p>
           </div>
 
           <p className="mt-6 text-center text-sm text-slate-500">
             <Link href="/" className="text-primary hover:underline">
-              ← Back to school website
+              ← Back to ALara school website
             </Link>
           </p>
         </div>

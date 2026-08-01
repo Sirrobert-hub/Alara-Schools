@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
-import { ExamStatus, Role } from "@prisma/client";
+import { ExamStatus, Role, AttendanceStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAuth, requireRole } from "@/lib/auth";
 
@@ -266,3 +266,193 @@ export async function saveComment(form: {
   revalidatePath("/app/reports");
   return { ok: true, id: comment.id };
 }
+
+export async function markAttendance(
+  classroomId: string,
+  termId: string,
+  date: string,
+  rows: { studentId: string; status: AttendanceStatus; remarks?: string }[]
+) {
+  const session = await requireAuth();
+  const role = session.user.role;
+
+  if (role === Role.CLASS_TEACHER) {
+    if (!session.user.teacherId) throw new Error("No teacher profile linked");
+    const classroom = await prisma.classRoom.findUnique({ where: { id: classroomId } });
+    if (!classroom || classroom.classTeacherId !== session.user.teacherId) {
+      throw new Error("You are not the class teacher for this classroom");
+    }
+  } else if (role !== Role.ADMIN && role !== Role.DEPUTY) {
+    throw new Error("You are not permitted to record attendance");
+  }
+
+  const parsedDate = new Date(date);
+  if (Number.isNaN(parsedDate.getTime())) throw new Error("Invalid date");
+
+  for (const row of rows) {
+    await prisma.attendance.upsert({
+      where: {
+        studentId_date: {
+          studentId: row.studentId,
+          date: parsedDate,
+        },
+      },
+      update: {
+        status: row.status,
+        remarks: row.remarks || null,
+        classroomId,
+        termId,
+        recordedById: session.user.id,
+      },
+      create: {
+        studentId: row.studentId,
+        classroomId,
+        termId,
+        date: parsedDate,
+        status: row.status,
+        remarks: row.remarks || null,
+        recordedById: session.user.id,
+      },
+    });
+  }
+
+  await audit(session.user.id, "MARK_ATTENDANCE", "ClassRoom", classroomId, `${rows.length} students, ${date}`);
+  revalidatePath("/app/attendance");
+  return { ok: true };
+}
+
+/** Present-day count / rate for a student, used on the student profile page. */
+export async function getStudentAttendanceSummary(studentId: string) {
+  const records = await prisma.attendance.findMany({ where: { studentId } });
+  const total = records.length;
+  const present = records.filter((r) => r.status === AttendanceStatus.PRESENT).length;
+  const rate = total > 0 ? Math.round((present / total) * 1000) / 10 : null;
+  return { total, present, rate };
+}
+
+export async function recordFeePayment(data: {
+  studentId: string;
+  amount: number;
+  paymentMethod: string;
+  referenceCode: string;
+}) {
+  const session = await requireRole(Role.ADMIN, Role.PRINCIPAL);
+  const payment = await prisma.feePayment.create({
+    data: {
+      studentId: data.studentId,
+      amount: data.amount,
+      paymentMethod: data.paymentMethod,
+      referenceCode: data.referenceCode,
+      recordedById: session.user.id,
+    },
+  });
+  await audit(session.user.id, "FEE_PAYMENT", "Student", data.studentId, `KES ${data.amount} via ${data.paymentMethod}`);
+  revalidatePath("/app/fees");
+  revalidatePath("/app/students");
+  return { ok: true, id: payment.id };
+}
+
+export async function createAnnouncement(data: {
+  title: string;
+  category: string;
+  content: string;
+}) {
+  const session = await requireRole(Role.ADMIN, Role.PRINCIPAL, Role.DEPUTY);
+  const announcement = await prisma.announcement.create({
+    data: {
+      title: data.title,
+      category: data.category,
+      content: data.content,
+      authorId: session.user.id,
+    },
+  });
+  await audit(session.user.id, "CREATE_ANNOUNCEMENT", "Announcement", announcement.id, data.title);
+  revalidatePath("/app/noticeboard");
+  revalidatePath("/app");
+  return { ok: true, id: announcement.id };
+}
+
+export async function bulkImportStudents(
+  list: Array<{
+    admissionNo: string;
+    upi?: string;
+    firstName: string;
+    lastName: string;
+    gender: "MALE" | "FEMALE";
+    classroomId: string;
+    parentName?: string;
+    parentPhone?: string;
+  }>
+) {
+  const session = await requireRole(Role.ADMIN, Role.PRINCIPAL, Role.DEPUTY);
+  let count = 0;
+  for (const item of list) {
+    await prisma.student.upsert({
+      where: { admissionNo: item.admissionNo },
+      update: {
+        upi: item.upi || null,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        gender: item.gender,
+        classroomId: item.classroomId,
+        parentName: item.parentName || null,
+        parentPhone: item.parentPhone || null,
+      },
+      create: {
+        admissionNo: item.admissionNo,
+        upi: item.upi || null,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        gender: item.gender,
+        classroomId: item.classroomId,
+        parentName: item.parentName || null,
+        parentPhone: item.parentPhone || null,
+      },
+    });
+    count++;
+  }
+  await audit(session.user.id, "BULK_IMPORT_STUDENTS", "Student", undefined, `Imported ${count} students`);
+  revalidatePath("/app/students");
+  revalidatePath("/app");
+  return { ok: true, count };
+}
+
+export async function bulkImportTeachers(
+  list: Array<{
+    tscNumber: string;
+    firstName: string;
+    lastName: string;
+    email?: string;
+    phone?: string;
+    gender: "MALE" | "FEMALE";
+  }>
+) {
+  const session = await requireRole(Role.ADMIN, Role.PRINCIPAL);
+  let count = 0;
+  for (const item of list) {
+    await prisma.teacher.upsert({
+      where: { tscNumber: item.tscNumber },
+      update: {
+        firstName: item.firstName,
+        lastName: item.lastName,
+        email: item.email || null,
+        phone: item.phone || null,
+        gender: item.gender,
+      },
+      create: {
+        tscNumber: item.tscNumber,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        email: item.email || null,
+        phone: item.phone || null,
+        gender: item.gender,
+      },
+    });
+    count++;
+  }
+  await audit(session.user.id, "BULK_IMPORT_TEACHERS", "Teacher", undefined, `Imported ${count} teachers`);
+  revalidatePath("/app/teachers");
+  revalidatePath("/app");
+  return { ok: true, count };
+}
+
