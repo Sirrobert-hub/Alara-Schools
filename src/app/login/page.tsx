@@ -5,20 +5,11 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useState } from "react";
 
-const DEMO_PERSONAS = [
-  { label: "Admin", username: "Admin", password: "Admin123", color: "bg-blue-600 text-white", desc: "System Administrator" },
-  { label: "Principal", username: "principal", password: "Admin123", color: "bg-violet-600 text-white", desc: "School Principal" },
-  { label: "Deputy", username: "deputy", password: "Admin123", color: "bg-indigo-600 text-white", desc: "Deputy Headteacher" },
-  { label: "Class Teacher", username: "aouma", password: "Admin123", color: "bg-teal-600 text-white", desc: "Grade 7A Teacher" },
-  { label: "Subject Teacher", username: "jochieng", password: "Admin123", color: "bg-emerald-600 text-white", desc: "Mathematics Teacher" },
-  { label: "Parent", username: "parent", password: "Admin123", color: "bg-amber-600 text-white", desc: "Parent / Guardian" },
-];
-
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const [username, setUsername] = useState("Admin");
-  const [password, setPassword] = useState("Admin123");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,11 +34,6 @@ function LoginForm() {
     router.refresh();
   }
 
-  const fillPersona = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
-    setError("");
-  };
 
   return (
     <div className="flex min-h-screen">
@@ -148,28 +134,7 @@ function LoginForm() {
             </button>
           </form>
 
-          {/* Quick Persona Logins */}
-          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-            <p className="mb-3 text-xs font-extrabold uppercase tracking-wider text-slate-500">
-              🎭 Quick Demo Login — All passwords: <span className="font-mono text-blue-700">Admin123</span>
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {DEMO_PERSONAS.map((p) => (
-                <button
-                  key={p.username}
-                  type="button"
-                  onClick={() => fillPersona(p.username, p.password)}
-                  title={`${p.desc} — @${p.username}`}
-                  className={`rounded-lg px-3 py-2 text-xs font-bold transition hover:opacity-90 active:scale-95 ${p.color}`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-            <p className="mt-3 text-center text-[10px] text-slate-400">
-              Click any role above to auto-fill credentials, then click Login
-            </p>
-          </div>
+
 
           <p className="mt-6 text-center text-sm text-slate-500">
             <Link href="/" className="text-primary hover:underline">

@@ -26,14 +26,6 @@ const MODULES = [
   { icon: "⚙", title: "System Settings", desc: "School profile, academic year & term control, and user account management." },
 ];
 
-const PERSONAS = [
-  { label: "Admin", href: "/login?user=Admin", color: "bg-blue-600 hover:bg-blue-700", desc: "Full system access" },
-  { label: "Principal", href: "/login?user=principal", color: "bg-violet-600 hover:bg-violet-700", desc: "Management view" },
-  { label: "Deputy", href: "/login?user=deputy", color: "bg-indigo-600 hover:bg-indigo-700", desc: "Academic oversight" },
-  { label: "Class Teacher", href: "/login?user=aouma", color: "bg-teal-600 hover:bg-teal-700", desc: "Grade 7A" },
-  { label: "Subject Teacher", href: "/login?user=jochieng", color: "bg-emerald-600 hover:bg-emerald-700", desc: "Mathematics" },
-  { label: "Parent", href: "/login?user=parent", color: "bg-amber-600 hover:bg-amber-700", desc: "Guardian portal" },
-];
 
 export default function LandingPage() {
   return (
@@ -184,31 +176,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Quick Persona Access */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wider text-primary">Live Demo Access</p>
-          <h2 className="font-display mt-2 text-3xl font-bold text-slate-900">
-            Experience Every Role — No Setup Required
-          </h2>
-          <p className="mt-3 text-slate-600">
-            Click any role below to instantly access the ALara SMIS system with a pre-configured demo account.
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {PERSONAS.map((p) => (
-              <Link
-                key={p.label}
-                href={p.href}
-                className={`rounded-xl px-6 py-3 text-sm font-bold text-white shadow-md transition hover:scale-105 active:scale-100 ${p.color}`}
-              >
-                <div>{p.label}</div>
-                <div className="text-[10px] opacity-75 font-normal">{p.desc}</div>
-              </Link>
-            ))}
-          </div>
-          <p className="mt-6 text-xs text-slate-400">All demo accounts use password: <span className="font-mono font-bold text-blue-700">Admin123</span></p>
-        </div>
-      </section>
 
       {/* Contact */}
       <section id="contact" className="py-24 bg-white">
